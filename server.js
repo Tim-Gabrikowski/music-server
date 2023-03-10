@@ -5,9 +5,10 @@ const readline = require("readline");
 const ytdl = require("ytdl-core");
 const ffmpeg = require("fluent-ffmpeg");
 const cors = require("cors");
+require("dotenv").config();
 
 const PATH_TO_INDEXFILE = `${__dirname}/music/index.json`;
-const HOST = "192.168.0.175";
+const HOST = process.env.HOST;
 
 if (!fs.existsSync(PATH_TO_INDEXFILE)) {
 	fs.writeFileSync(PATH_TO_INDEXFILE, "[]");
