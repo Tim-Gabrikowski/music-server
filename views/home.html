@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Youtube to mp3 stream</title>
+		<link
+			rel="stylesheet"
+			href="https://tim-gabrikowski.github.io/TimWizardUI/style.css"
+			type="text/css"
+		/>
+	</head>
+	<body>
+		<script
+			type="text/javascript"
+			src="https://tim-gabrikowski.github.io/TimWizardUI/script.js"
+		></script>
+		<script>
+			let serverInput = field_create({
+				placeholder: "Server host",
+				value: "http://--HOST--:3010",
+				validator: {
+					required: true,
+				},
+				color: "#ff0000",
+			});
+
+			let downloaderButton = button_create({
+				label: "Download",
+				color: "#ff0000",
+				style: {
+					width: "480px",
+				},
+				onclick: () => {
+					if (!serverInput.valid()) return;
+					page_show(downloadPage);
+				},
+			});
+			let listButton = button_create({
+				label: "List",
+				color: "#00ff00",
+				style: {
+					width: "480px",
+				},
+				onclick: async () => {
+					if (!serverInput.valid()) return;
+					page_show(loadingPage);
+
+					let server = serverInput.get();
+					let response = await fetch(server + "/list", {
+						method: "GET",
+					});
+					let result = await response.json();
+					console.log(result);
+					let listElements = [];
+					for (let index = 0; index < result.length; index++) {
+						const file = result[index];
+
+						let audio = document.createElement("audio");
+						audio.controls = true;
+						audio.src = server + "/play/" + file.key;
+						audio.autoplay = false;
+
+						let listElement = layout_create({
+							type: "row",
+							border: true,
+							style: {
+								padding: "10px",
+								marginBottom: "10px",
+								width: "75vw",
+								justifyContent: "space-between",
+								textAlign: "left",
+							},
+							children: [
+								layout_create({
+									type: "column",
+									children: [
+										text_create({
+											text: file.title,
+											style: { marginBottom: "0", marginTop: "0" },
+										}),
+										text_create({
+											text: file.publisher,
+											style: { marginBottom: "0", marginTop: "0" },
+										}),
+										text_create({
+											text: file.key,
+											style: { marginBottom: "0", marginTop: "0" },
+										}),
+									],
+								}),
+								audio,
+							],
+						});
+						listElements.push(listElement);
+					}
+
+					let songList = layout_create({
+						type: "column",
+						children: listElements,
+					});
+					let listPage = page_create({
+						title: "Songs",
+						center: false,
+						destroyOnHide: true,
+						children: [
+							button_create({
+								label: "Cancel",
+								color: "#FFA500",
+								style: { width: "480px", alignSelf: "center" },
+								onclick: () => {
+									page_show(mainPage);
+								},
+							}),
+							songList,
+						],
+					});
+					page_show(listPage);
+				},
+			});
+
+			let mainPage = page_create({
+				title: "Music server",
+				center: true,
+				children: [serverInput, downloaderButton, listButton],
+			});
+			page_show(mainPage);
+
+			let idInput = field_create({
+				placeholder: "Video id",
+				validator: {
+					required: true,
+				},
+				color: "#ff0000",
+			});
+			let titleInput = field_create({
+				placeholder: "Songtitle",
+				validator: {
+					required: true,
+				},
+				color: "#ff0000",
+			});
+			let publisherInput = field_create({
+				placeholder: "publisher",
+				validator: {
+					required: true,
+				},
+				color: "#ff0000",
+			});
+			let cancelButton_d = button_create({
+				label: "cancel",
+				color: "#FFA500",
+				style: {
+					width: "230px",
+				},
+				onclick: () => {
+					page_show(mainPage);
+				},
+			});
+			let submitButton = button_create({
+				label: "Download",
+				color: "#ff0000",
+				style: {
+					width: "230px",
+				},
+				onclick: async () => {
+					let idInput_v = idInput.valid();
+					let titleInput_v = titleInput.valid();
+					let publisherInput_v = publisherInput.valid();
+
+					if (!(idInput_v && titleInput_v && publisherInput_v)) return;
+
+					let id = idInput.get();
+					let title = titleInput.get();
+					let publisher = publisherInput.get();
+
+					console.log(id, title, publisher);
+
+					let body = {
+						videoId: id,
+						title: title,
+						publisher: publisher,
+					};
+
+					page_show(loadingPage);
+					let server = serverInput.get();
+					let response = await fetch(server + "/upload", {
+						method: "POST",
+						headers: {
+							Accept: "application.json",
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify(body),
+					});
+					let result = await response.json();
+					console.log(result);
+					idInput.set("");
+					titleInput.set("");
+					publisherInput.set("");
+					page_show(successPage);
+				},
+			});
+
+			// download Page
+			let downloadPage = page_create({
+				title: "Downloader",
+				center: true,
+				hide: false,
+				children: [
+					idInput,
+					titleInput,
+					publisherInput,
+					layout_create({
+						type: "row",
+						children: [cancelButton_d, submitButton],
+					}),
+				],
+			});
+
+			// Loading Page
+			let loadingPage = page_create({
+				title: "Loading...",
+				center: true,
+				children: [],
+			});
+
+			// success Page
+			let successPage = page_create({
+				title: "success",
+				center: true,
+				children: [
+					button_create({
+						label: "download other",
+						color: "#ff0000",
+						style: {
+							width: "480px",
+						},
+						onclick: () => {
+							page_show(downloadPage);
+						},
+					}),
+				],
+			});
+
+			let songList = layout_create({
+				type: "column",
+				children: [],
+			});
+
+			//song list page
+			let listPage = page_create({
+				title: "Playlist",
+				center: false,
+				destroyOnHide: false,
+				children: [songList],
+			});
+		</script>
+	</body>
+</html>
