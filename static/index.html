@@ -7,13 +7,17 @@
 			href="https://tim-gabrikowski.github.io/TimWizardUI/style.css"
 			type="text/css"
 		/>
+		<style></style>
 	</head>
 	<body>
 		<script
 			type="text/javascript"
 			src="https://tim-gabrikowski.github.io/TimWizardUI/script.js"
 		></script>
-		<script>
+
+		<script type="module">
+			import { audioplayer_create } from "https://tim-gabrikowski.github.io/TimWizardUI/plugins/audioplayer/script.js";
+			audioplayer_create();
 			let serverInput = field_create({
 				placeholder: "Server host",
 				value: "http://--HOST--",
@@ -50,14 +54,14 @@
 					});
 					let result = await response.json();
 					console.log(result);
+
+					let audioplayer = audioplayer_create({
+						id: "audioplayer",
+					});
+
 					let listElements = [];
 					for (let index = 0; index < result.length; index++) {
 						const file = result[index];
-
-						let audio = document.createElement("audio");
-						audio.controls = true;
-						audio.src = server + "/play/" + file.key;
-						audio.autoplay = false;
 
 						let listElement = layout_create({
 							type: "row",
@@ -87,7 +91,20 @@
 										}),
 									],
 								}),
-								audio,
+								button_create({
+									label: "play",
+									color: "#00ff00",
+									style: {
+										width: "200px",
+									},
+									onclick: () => {
+										audioplayer.change({
+											src: server + "/play/" + file.key,
+											title: file.title,
+											artist: file.publisher,
+										});
+									},
+								}),
 							],
 						});
 						listElements.push(listElement);
@@ -95,6 +112,9 @@
 
 					let songList = layout_create({
 						type: "column",
+						style: {
+							marginBottom: "150px",
+						},
 						children: listElements,
 					});
 					let listPage = page_create({
@@ -111,6 +131,7 @@
 								},
 							}),
 							songList,
+							audioplayer,
 						],
 					});
 					page_show(listPage);

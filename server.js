@@ -21,10 +21,11 @@ app.listen(3010, function () {
 	console.log("[NodeJS] Application Listening on Port 3010");
 });
 app.get("/", (req, res) => {
-	var html = fs.readFileSync(`${__dirname}/views/home.html`);
+	var html = fs.readFileSync(`${__dirname}/static/index.html`);
 	html = String(html).replace("--HOST--", HOST);
 	res.send(html);
 });
+app.use("/", express.static("./static"));
 app.get("/list", (req, res) => {
 	res.sendFile(PATH_TO_INDEXFILE);
 });
