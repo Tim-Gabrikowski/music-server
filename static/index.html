@@ -7,17 +7,22 @@
 			href="https://tim-gabrikowski.github.io/TimWizardUI/style.css"
 			type="text/css"
 		/>
-		<style></style>
+		<link
+			rel="stylesheet"
+			href="https://tim-gabrikowski.github.io/TimWizardUI/plugins/audioplayer/style.css"
+			type="text/css"
+		/>
 	</head>
 	<body>
 		<script
 			type="text/javascript"
 			src="https://tim-gabrikowski.github.io/TimWizardUI/script.js"
 		></script>
-
-		<script type="module">
-			import { audioplayer_create } from "https://tim-gabrikowski.github.io/TimWizardUI/plugins/audioplayer/script.js";
-			audioplayer_create();
+		<script
+			type="text/javascript"
+			src="https://tim-gabrikowski.github.io/TimWizardUI/plugins/audioplayer/script.js"
+		></script>
+		<script>
 			let serverInput = field_create({
 				placeholder: "Server host",
 				value: "http://--HOST--",
@@ -57,6 +62,7 @@
 
 					let audioplayer = audioplayer_create({
 						id: "audioplayer",
+						color: "#00ff00",
 					});
 
 					let listElements = [];
@@ -66,10 +72,11 @@
 						let listElement = layout_create({
 							type: "row",
 							border: true,
+							color: "#00ff00",
 							style: {
 								padding: "10px",
 								marginBottom: "10px",
-								width: "75vw",
+								width: "65vw",
 								justifyContent: "space-between",
 								textAlign: "left",
 							},
@@ -123,9 +130,15 @@
 						destroyOnHide: true,
 						children: [
 							button_create({
-								label: "Cancel",
+								label: "Back",
 								color: "#FFA500",
-								style: { width: "480px", alignSelf: "center" },
+								style: {
+									paddingLeft: "10px",
+									paddingRight: "10px",
+									position: "fixed",
+									top: "10px",
+									left: "10px",
+								},
 								onclick: () => {
 									page_show(mainPage);
 								},
