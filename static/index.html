@@ -58,7 +58,6 @@
 						method: "GET",
 					});
 					let result = await response.json();
-					console.log(result);
 
 					let audioplayer = audioplayer_create({
 						id: "audioplayer",
@@ -68,6 +67,7 @@
 					let listElements = [];
 					for (let index = 0; index < result.length; index++) {
 						const file = result[index];
+						const nextFile = result[index + 1] || result[0];
 
 						let listElement = layout_create({
 							type: "row",
@@ -105,15 +105,25 @@
 										width: "200px",
 									},
 									onclick: () => {
-										audioplayer.change({
-											src: server + "/play/" + file.key,
-											title: file.title,
-											artist: file.publisher,
-										});
+										playSong(index);
 									},
 								}),
 							],
 						});
+						function playSong(index) {
+							audioplayer.change({
+								src: server + "/play/" + result[index].key,
+								title: result[index].title,
+								artist: result[index].publisher,
+								onended: () => {
+									if (index + 1 == result.length) {
+										console.log("end of list");
+									} else {
+										playSong(index + 1);
+									}
+								},
+							});
+						}
 						listElements.push(listElement);
 					}
 
@@ -206,8 +216,6 @@
 					let title = titleInput.get();
 					let publisher = publisherInput.get();
 
-					console.log(id, title, publisher);
-
 					let body = {
 						videoId: id,
 						title: title,
@@ -225,7 +233,7 @@
 						body: JSON.stringify(body),
 					});
 					let result = await response.json();
-					console.log(result);
+
 					idInput.set("");
 					titleInput.set("");
 					publisherInput.set("");

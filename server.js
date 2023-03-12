@@ -8,7 +8,8 @@ const cors = require("cors");
 require("dotenv").config();
 
 const PATH_TO_INDEXFILE = `${__dirname}/music/index.json`;
-const HOST = process.env.HOST;
+const HOST = process.env.HOST || "localhost";
+const PORT = process.env.PORT || 3010;
 
 if (!fs.existsSync(PATH_TO_INDEXFILE)) {
 	fs.writeFileSync(PATH_TO_INDEXFILE, "[]");
@@ -17,12 +18,12 @@ if (!fs.existsSync(PATH_TO_INDEXFILE)) {
 app.use(express.json());
 app.use(cors());
 
-app.listen(3010, function () {
-	console.log("[NodeJS] Application Listening on Port 3010");
+app.listen(PORT, function () {
+	console.log("[NodeJS] Application Listening on Port " + PORT);
 });
 app.get("/", (req, res) => {
 	var html = fs.readFileSync(`${__dirname}/static/index.html`);
-	html = String(html).replace("--HOST--", HOST);
+	html = String(html).replace("--HOST--", HOST + ":" + PORT);
 	res.send(html);
 });
 app.use("/", express.static("./static"));
