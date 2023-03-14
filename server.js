@@ -1,6 +1,6 @@
 var express = require("express");
 var app = express();
-var fs = require("fs");
+const fs = require("fs");
 const readline = require("readline");
 const ytdl = require("ytdl-core");
 const ffmpeg = require("fluent-ffmpeg");
@@ -10,6 +10,8 @@ require("dotenv").config();
 const PATH_TO_INDEXFILE = `${__dirname}/music/index.json`;
 const HOST = process.env.HOST || "localhost";
 const PORT = process.env.PORT || 3010;
+const SERVER_URL =
+	process.env.NO_PORT_EXPOSE == "yes" ? HOST : HOST + ":" + PORT;
 
 if (!fs.existsSync(PATH_TO_INDEXFILE)) {
 	fs.writeFileSync(PATH_TO_INDEXFILE, "[]");
@@ -23,7 +25,7 @@ app.listen(PORT, function () {
 });
 app.get("/", (req, res) => {
 	var html = fs.readFileSync(`${__dirname}/static/index.html`);
-	html = String(html).replace("--HOST--", HOST + ":" + PORT);
+	html = String(html).replace("--HOST--", SERVER_URL);
 	res.send(html);
 });
 app.use("/", express.static("./static"));
