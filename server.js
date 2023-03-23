@@ -62,6 +62,14 @@ app.post("/upload", (req, res) => {
 		});
 });
 
+app.get("/analyse", (req, res) => {
+	const input = req.query.input;
+	res.send({
+		input: input,
+		type: getInputType(input),
+	});
+});
+
 app.get("/play/:key", function (req, res) {
 	var key = req.params.key;
 
@@ -104,3 +112,47 @@ app.get("/play/:key", function (req, res) {
 	}
 	readStream.pipe(res);
 });
+
+/* UTIL */
+
+function getInputType(link) {
+	let out = "";
+
+	// video id
+	if (/^.{11}$/.test(link)) {
+		out = "video id";
+
+		// playlist id
+	} else if (/^.{34}$/.test(link)) {
+		out = "playlist id";
+
+		// playlist link
+	} else if (
+		/(http|https):\/\/(www\.|)youtube\.com\/playlist\?list=.{34}/.test(link)
+	) {
+		out = "playlist link";
+
+		// mixed link
+	} else if (
+		/(http|https):\/\/(www\.|)youtube\.com\/watch\?v=.{11}&list=.{34}&.*/.test(
+			link
+		)
+	) {
+		out = "mixed link";
+
+		// video link
+	} else if (
+		/(http|https):\/\/(www\.|)youtube\.com\/watch\?v=.{11}$/.test(link)
+	) {
+		out = "video link";
+
+		// short video link
+	} else if (/(http|https):\/\/youtu\.be\/.{11}$/.test(link)) {
+		out = "short video link";
+
+		// unknown
+	} else {
+		out = "unknown";
+	}
+	return out;
+}
