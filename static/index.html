@@ -40,7 +40,7 @@
 				},
 				onclick: () => {
 					if (!serverInput.valid()) return;
-					page_show(downloadPage);
+					downloadPage.show();
 				},
 			});
 			let listButton = button_create({
@@ -51,7 +51,7 @@
 				},
 				onclick: async () => {
 					if (!serverInput.valid()) return;
-					page_show(loadingPage);
+					loadingPage.show();
 
 					let server = serverInput.get();
 					let response = await fetch(server + "/list", {
@@ -150,14 +150,14 @@
 									left: "10px",
 								},
 								onclick: () => {
-									page_show(mainPage);
+									mainPage.show();
 								},
 							}),
 							songList,
 							audioplayer,
 						],
 					});
-					page_show(listPage);
+					listPage.show();
 				},
 			});
 
@@ -166,7 +166,7 @@
 				center: true,
 				children: [serverInput, downloaderButton, listButton],
 			});
-			page_show(mainPage);
+			mainPage.show();
 
 			let idInput = field_create({
 				placeholder: "Video id",
@@ -196,7 +196,7 @@
 					width: "230px",
 				},
 				onclick: () => {
-					page_show(mainPage);
+					mainPage.show();
 				},
 			});
 			let submitButton = button_create({
@@ -222,7 +222,7 @@
 						publisher: publisher,
 					};
 
-					page_show(loadingPage);
+					loadingPage.show();
 					let server = serverInput.get();
 					let response = await fetch(server + "/upload", {
 						method: "POST",
@@ -237,7 +237,7 @@
 					idInput.set("");
 					titleInput.set("");
 					publisherInput.set("");
-					page_show(successPage);
+					successPage.show();
 				},
 			});
 
@@ -276,7 +276,7 @@
 							width: "480px",
 						},
 						onclick: () => {
-							page_show(downloadPage);
+							downloadPage.show();
 						},
 					}),
 				],
