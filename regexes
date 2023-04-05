@@ -11,7 +11,7 @@ playlist link:
 https://youtube.com/playlist?list=PL-tu0Zgcb1SJ2RDA-mxFpV_7I7uYRysli
 
 mixed link:
-/(http|https):\/\/(www\.|)youtube\.com\/watch\?v=.{11}&list=.{34}&.\*/
+/(http|https):\/\/(www\.|)youtube\.com\/watch\?v=.{11}&list=.{34}&.\
 https://www.youtube.com/watch?v=ZQKdayVotaI&list=PL-tu0Zgcb1SJ2RDA-mxFpV_7I7uYRysli&index=1
 
 video link:
