@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Youtube to mp3 stream</title>
+		<link
+			rel="stylesheet"
+			href="https://tim-gabrikowski.github.io/TimWizardUI/style.css"
+			type="text/css"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://tim-gabrikowski.github.io/TimWizardUI/plugins/audioplayer/style.css"
+			type="text/css"
+		/>
+	</head>
+	<body>
+		<script
+			type="text/javascript"
+			src="https://tim-gabrikowski.github.io/TimWizardUI/script.js"
+		></script>
+		<script
+			type="text/javascript"
+			src="https://tim-gabrikowski.github.io/TimWizardUI/plugins/audioplayer/script.js"
+		></script>
+		<script>
+			let serverInput = field_create({
+				placeholder: "Server host",
+				value: "http://--HOST--",
+				validator: {
+					required: true,
+				},
+				color: "#ff0000",
+			});
+
+			let downloaderButton = button_create({
+				label: "Download",
+				color: "#ff0000",
+				style: {
+					width: "480px",
+				},
+				onclick: () => {
+					if (!serverInput.valid()) return;
+					downloadPage.show();
+				},
+			});
+			let listButton = button_create({
+				label: "List",
+				color: "#00ff00",
+				style: {
+					width: "480px",
+				},
+				onclick: async () => {
+					if (!serverInput.valid()) return;
+					loadingPage.show();
+
+					let server = serverInput.get();
+					let response = await fetch(server + "/list", {
+						method: "GET",
+					});
+					let result = await response.json();
+
+					let audioplayer = audioplayer_create({
+						id: "audioplayer",
+						color: "#00ff00",
+					});
+
+					let listElements = [];
+					for (let index = 0; index < result.length; index++) {
+						const file = result[index];
+						const nextFile = result[index + 1] || result[0];
+
+						let listElement = layout_create({
+							type: "row",
+							border: true,
+							color: "#00ff00",
+							style: {
+								padding: "10px",
+								marginBottom: "10px",
+								width: "65vw",
+								justifyContent: "space-between",
+								textAlign: "left",
+							},
+							children: [
+								layout_create({
+									type: "column",
+									children: [
+										text_create({
+											text: file.title,
+											style: { marginBottom: "0", marginTop: "0" },
+										}),
+										text_create({
+											text: file.publisher,
+											style: { marginBottom: "0", marginTop: "0" },
+										}),
+										text_create({
+											text: file.key,
+											style: { marginBottom: "0", marginTop: "0" },
+										}),
+									],
+								}),
+								button_create({
+									label: "play",
+									color: "#00ff00",
+									style: {
+										width: "200px",
+									},
+									onclick: () => {
+										playSong(index);
+									},
+								}),
+							],
+						});
+						function playSong(index) {
+							audioplayer.change({
+								src: server + "/play/" + result[index].key,
+								title: result[index].title,
+								artist: result[index].publisher,
+								onended: () => {
+									if (index + 1 == result.length) {
+										console.log("end of list");
+									} else {
+										playSong(index + 1);
+									}
+								},
+							});
+						}
+						listElements.push(listElement);
+					}
+
+					let songList = layout_create({
+						type: "column",
+						style: {
+							marginBottom: "150px",
+						},
+						children: listElements,
+					});
+					let listPage = page_create({
+						title: "Songs",
+						center: false,
+						destroyOnHide: true,
+						children: [
+							button_create({
+								label: "Back",
+								color: "#FFA500",
+								style: {
+									paddingLeft: "10px",
+									paddingRight: "10px",
+									position: "fixed",
+									top: "10px",
+									left: "10px",
+								},
+								onclick: () => {
+									mainPage.show();
+								},
+							}),
+							songList,
+							audioplayer,
+						],
+					});
+					listPage.show();
+				},
+			});
+			let probeButton = button_create({
+				label: "Probe",
+				color: "#ff0000",
+				style: {
+					width: "480px",
+				},
+				onclick: () => {
+					if (!serverInput.valid()) return;
+					probePage.show();
+				},
+			});
+
+			let mainPage = page_create({
+				title: "Music server",
+				center: true,
+				children: [serverInput, downloaderButton, listButton, probeButton],
+			});
+			mainPage.show();
+
+			let idInput = field_create({
+				placeholder: "Video id",
+				validator: {
+					required: true,
+				},
+				color: "#ff0000",
+			});
+			let titleInput = field_create({
+				placeholder: "Songtitle",
+				validator: {
+					required: true,
+				},
+				color: "#ff0000",
+			});
+			let publisherInput = field_create({
+				placeholder: "publisher",
+				validator: {
+					required: true,
+				},
+				color: "#ff0000",
+			});
+			let cancelButton_d = button_create({
+				label: "cancel",
+				color: "#FFA500",
+				style: {
+					width: "230px",
+				},
+				onclick: () => {
+					mainPage.show();
+				},
+			});
+			let submitButton = button_create({
+				label: "Download",
+				color: "#ff0000",
+				style: {
+					width: "230px",
+				},
+				onclick: async () => {
+					let idInput_v = idInput.valid();
+					let titleInput_v = titleInput.valid();
+					let publisherInput_v = publisherInput.valid();
+
+					if (!(idInput_v && titleInput_v && publisherInput_v)) return;
+
+					let id = idInput.get();
+					let title = titleInput.get();
+					let publisher = publisherInput.get();
+
+					let body = {
+						videoId: id,
+						title: title,
+						publisher: publisher,
+					};
+
+					loadingPage.show();
+					let server = serverInput.get();
+					let response = await fetch(server + "/upload", {
+						method: "POST",
+						headers: {
+							Accept: "application.json",
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify(body),
+					});
+					let result = await response.json();
+
+					idInput.set("");
+					titleInput.set("");
+					publisherInput.set("");
+					successPage.show();
+				},
+			});
+
+			// download Page
+			let downloadPage = page_create({
+				title: "Downloader",
+				center: true,
+				hide: false,
+				children: [
+					idInput,
+					titleInput,
+					publisherInput,
+					layout_create({
+						type: "row",
+						children: [cancelButton_d, submitButton],
+					}),
+				],
+			});
+
+			// Loading Page
+			let loadingPage = page_create({
+				title: "Loading...",
+				center: true,
+				children: [],
+			});
+
+			// success Page
+			let successPage = page_create({
+				title: "success",
+				center: true,
+				children: [
+					button_create({
+						label: "download other",
+						color: "#ff0000",
+						style: {
+							width: "480px",
+						},
+						onclick: () => {
+							downloadPage.show();
+						},
+					}),
+				],
+			});
+
+			let songList = layout_create({
+				type: "column",
+				children: [],
+			});
+
+			//song list page
+			let listPage = page_create({
+				title: "Playlist",
+				center: false,
+				destroyOnHide: false,
+				children: [songList],
+			});
+
+			let linkInput = field_create({
+				placeholder: "Input",
+				validator: {
+					required: true,
+				},
+				color: "#ff0000",
+			});
+
+			let resultText = text_create({
+				text: "",
+			});
+
+			//probePage
+			let probePage = page_create({
+				title: "Probe",
+				center: true,
+				children: [
+					linkInput,
+					button_create({
+						label: "probe",
+						color: "#ff0000",
+						onclick: async () => {
+							if (!linkInput.valid()) return;
+
+							let input = linkInput.get();
+
+							let server = serverInput.get();
+							let response = await fetch(
+								server +
+									"/analyse?" +
+									new URLSearchParams({
+										input: input,
+									}),
+								{
+									method: "GET",
+									headers: {
+										Accept: "application.json",
+										"Content-Type": "application/json",
+									},
+								}
+							);
+							let result = await response.json();
+							resultText.change(JSON.stringify(result));
+						},
+					}),
+					resultText,
+				],
+			});
+		</script>
+	</body>
+</html>
