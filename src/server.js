@@ -9,7 +9,7 @@ require("dotenv").config();
 const types = require("./inputTypes");
 const path = require("path");
 
-const PATH_TO_INDEXFILE = path.join(_dirname, "../music/index.json");
+const PATH_TO_INDEXFILE = path.join(__dirname, "../music/index.json");
 const HOST = process.env.HOST || "localhost";
 const PORT = process.env.PORT || 3010;
 const SERVER_URL =
@@ -44,7 +44,7 @@ app.post("/upload", (req, res) => {
 	let start = Date.now();
 	ffmpeg(stream)
 		.audioBitrate(128)
-		.save(path.join(_dirname, `../music/${videoId}.mp3`))
+		.save(path.join(__dirname, `../music/${videoId}.mp3`))
 		.on("progress", (p) => {})
 		.on("end", () => {
 			console.log(`\ndone, thanks - ${(Date.now() - start) / 1000}s`);
@@ -77,7 +77,7 @@ app.get("/analyse", (req, res) => {
 app.get("/play/:key", function (req, res) {
 	var key = req.params.key;
 
-	var music = path.join(_dirname, `../music/${key}.mp3`);
+	var music = path.join(__dirname, `../music/${key}.mp3`);
 
 	var stat = fs.statSync(music);
 	range = req.headers.range;

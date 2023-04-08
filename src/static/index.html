@@ -25,7 +25,7 @@
 		<script>
 			let serverInput = field_create({
 				placeholder: "Server host",
-				value: "http://--HOST--",
+				value: window.location.protocol + "//" + window.location.host,
 				validator: {
 					required: true,
 				},
