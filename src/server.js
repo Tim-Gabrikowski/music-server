@@ -3,6 +3,7 @@ var app = express();
 const fs = require("fs");
 const readline = require("readline");
 const ytdl = require("ytdl-core");
+const ytpl = require("ytpl");
 const ffmpeg = require("fluent-ffmpeg");
 const cors = require("cors");
 require("dotenv").config();
@@ -64,13 +65,13 @@ app.post("/upload", (req, res) => {
 		});
 });
 
-app.get("/analyse", (req, res) => {
+app.get("/analyse", async (req, res) => {
 	const input = req.query.input;
 	let input_type = getInputType(input);
 	res.send({
 		input: input,
 		type: getInputType(input),
-		data: getInputData(input, input_type),
+		data: await getInputData(input, input_type),
 	});
 });
 
@@ -161,24 +162,26 @@ function getInputType(link) {
 	return out;
 }
 
-function getInputData(input, type) {
+async function getInputData(input, type) {
 	let data = {};
 
 	switch (type) {
 		case types.VIDEO_ID:
-			data = { videoId: input };
+			data = { videoId: input, video: await ytdl.getBasicInfo(input) };
 			break;
 
 		case types.PLAYLIST_ID:
-			data = { playlistId: input };
+			data = { playlistId: input, playlist: await ytpl(input) };
 			break;
 
 		case types.PLAYLIST_LINK:
+			let pid_s = input.replace(
+				/^(http|https):\/\/(www\.|)youtube\.com\/playlist\?list=/,
+				""
+			);
 			data = {
-				playlistId: input.replace(
-					/^(http|https):\/\/(www\.|)youtube\.com\/playlist\?list=/,
-					""
-				),
+				playlistId: pid_s,
+				playlist: await ytpl(pid_s),
 			};
 			break;
 
@@ -187,26 +190,32 @@ function getInputData(input, type) {
 				/^(http|https):\/\/(www\.|)youtube\.com\/watch\?v=/,
 				""
 			);
+			let vid_m = lastChunk.replace(/&list=.{34}&.*$/, "");
+			let pid_m = lastChunk.replace(/^(.{11}&list=)/, "").replace(/(&.*)$/, "");
 			data = {
-				videoId: lastChunk.replace(/&list=.{34}&.*$/, ""),
-				playlistId: lastChunk
-					.replace(/^(.{11}&list=)/, "")
-					.replace(/(&.*)$/, ""),
+				videoId: vid_m,
+				video: await ytdl.getBasicInfo(vid_m),
+				playlistId: pid_m,
+				playlist: await ytpl(pid_m),
 			};
 			break;
 
 		case types.VIDEO_LINK:
+			let vid_s = input.replace(
+				/^(http|https):\/\/(www\.|)youtube\.com\/watch\?v=/,
+				""
+			);
 			data = {
-				videoId: input.replace(
-					/^(http|https):\/\/(www\.|)youtube\.com\/watch\?v=/,
-					""
-				),
+				videoId: vid_s,
+				video: await ytdl.getBasicInfo(vid_s),
 			};
 			break;
 
 		case types.SHORT_LINK:
+			let vid_sl = input.replace(/^(http|https):\/\/youtu\.be\//, "");
 			data = {
-				videoId: input.replace(/^(http|https):\/\/youtu\.be\//, ""),
+				videoId: vid_sl,
+				video: await ytdl.getBasicInfo(vid_sl),
 			};
 			break;
 
