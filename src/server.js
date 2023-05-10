@@ -69,6 +69,7 @@ app.post("/upload", (req, res) => {
 				filename: fileName,
 			});
 
+			console.log("try to upload file");
 			fetch("http://localhost:3030/files/upload", {
 				method: "POST",
 				body: form,
@@ -85,6 +86,9 @@ app.post("/upload", (req, res) => {
 						file: json.file,
 					});
 					fs.writeFileSync(PATH_TO_INDEXFILE, JSON.stringify(filesList));
+					console.log("File Uploaded");
+					fs.rmSync(path.join(__dirname, `../music/${videoId}.mp3`));
+					console.log("deleted file locally");
 				})
 				.catch((error) => {
 					console.log(
@@ -125,8 +129,8 @@ app.get("/play/:key", function (req, res) {
 	if (song.file !== undefined) {
 		console.log("redirecting");
 		return res.redirect(
-			"http://localhost:3030/download/stream/" + song.file.id,
-			301
+			301,
+			"http://localhost:3030/download/stream/" + song.file.id
 		);
 	}
 
