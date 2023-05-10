@@ -85,6 +85,20 @@ app.post("/upload", (req, res) => {
 						file: json.file,
 					});
 					fs.writeFileSync(PATH_TO_INDEXFILE, JSON.stringify(filesList));
+				})
+				.catch((error) => {
+					console.log(
+						"Fileserver not reachable or request failed, file only local"
+					);
+					let filesList = [];
+					filesList = JSON.parse(fs.readFileSync(PATH_TO_INDEXFILE));
+					filesList.push({
+						key: videoId,
+						title: title,
+						publisher: publisher,
+						filename: videoId + ".mp3",
+					});
+					fs.writeFileSync(PATH_TO_INDEXFILE, JSON.stringify(filesList));
 				});
 		});
 });
