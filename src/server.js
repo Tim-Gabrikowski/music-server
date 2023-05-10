@@ -9,6 +9,8 @@ const cors = require("cors");
 require("dotenv").config();
 const types = require("./inputTypes");
 const path = require("path");
+const FormData = require("form-data");
+const fetch = require("node-fetch");
 
 const PATH_TO_INDEXFILE = path.join(__dirname, "../music/index.json");
 const HOST = process.env.HOST || "localhost";
@@ -47,21 +49,43 @@ app.post("/upload", (req, res) => {
 		.audioBitrate(128)
 		.save(path.join(__dirname, `../music/${videoId}.mp3`))
 		.on("progress", (p) => {})
-		.on("end", () => {
+		.on("end", async () => {
 			console.log(`\ndone, thanks - ${(Date.now() - start) / 1000}s`);
-			let filesList = [];
-			filesList = JSON.parse(fs.readFileSync(PATH_TO_INDEXFILE));
-			filesList.push({
-				key: videoId,
-				title: title,
-				publisher: publisher,
-				filename: videoId + ".mp3",
-			});
-			fs.writeFileSync(PATH_TO_INDEXFILE, JSON.stringify(filesList));
+
 			res.send({
 				message: "done",
 				key: videoId,
 			});
+
+			const form = new FormData();
+			const buffer = fs.readFileSync(
+				path.join(__dirname, `../music/${videoId}.mp3`)
+			);
+			const fileName = videoId + ".mp3";
+
+			form.append("file", buffer, {
+				contentType: "text/plain",
+				name: "file",
+				filename: fileName,
+			});
+
+			fetch("http://localhost:3030/files/upload", {
+				method: "POST",
+				body: form,
+			})
+				.then((res) => res.json())
+				.then((json) => {
+					let filesList = [];
+					filesList = JSON.parse(fs.readFileSync(PATH_TO_INDEXFILE));
+					filesList.push({
+						key: videoId,
+						title: title,
+						publisher: publisher,
+						filename: videoId + ".mp3",
+						file: json.file,
+					});
+					fs.writeFileSync(PATH_TO_INDEXFILE, JSON.stringify(filesList));
+				});
 		});
 });
 
@@ -77,6 +101,20 @@ app.get("/analyse", async (req, res) => {
 
 app.get("/play/:key", function (req, res) {
 	var key = req.params.key;
+
+	let indexfile = fs.readFileSync(PATH_TO_INDEXFILE);
+	let index = JSON.parse(indexfile);
+
+	let song = index.filter((e) => e.key == key)[0];
+	if (song == undefined) return res.sendStatus(404);
+	console.log(song);
+	if (song.file !== undefined) {
+		console.log("redirecting");
+		return res.redirect(
+			"http://localhost:3030/download/stream/" + song.file.id,
+			301
+		);
+	}
 
 	var music = path.join(__dirname, `../music/${key}.mp3`);
 
