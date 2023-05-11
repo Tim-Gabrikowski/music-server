@@ -129,7 +129,7 @@ app.get("/play/:key", function (req, res) {
 	if (song.file !== undefined) {
 		console.log("redirecting");
 		return res.redirect(
-			301,
+			302,
 			"http://localhost:3030/download/stream/" + song.file.id
 		);
 	}
