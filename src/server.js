@@ -220,6 +220,7 @@ function getInputType(link) {
 
 async function getInputData(input, type) {
 	let data = {};
+	let video_data = {};
 
 	switch (type) {
 		case types.VIDEO_ID:
@@ -261,9 +262,10 @@ async function getInputData(input, type) {
 				/^(http|https):\/\/(www\.|)youtube\.com\/watch\?v=/,
 				""
 			);
+			video_data = await ytdl.getBasicInfo(vid_s);
 			data = {
 				videoId: vid_s,
-				video: await ytdl.getBasicInfo(vid_s),
+				video: video_data.player_response.videoDetails,
 			};
 			break;
 
