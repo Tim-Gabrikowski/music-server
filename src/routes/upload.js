@@ -1,0 +1,27 @@
+import fetch from "node-fetch";
+import FormData from "form-data";
+import { createReadStream } from "fs";
+
+import dotenv from "dotenv";
+dotenv.config();
+
+export async function uploadFile(path) {
+	try {
+		let form = new FormData();
+
+		form.append("file", createReadStream(path));
+
+		let res = await fetch("http://localhost:3030/files/upload", {
+			method: "POST",
+			headers: {
+				Authorization: "SOFTWARE " + process.env.FILESERVER_TOKEN,
+			},
+			body: form,
+		});
+		let result = await res.json();
+
+		return { ok: true, result: result };
+	} catch (err) {
+		return { ok: false, error: err };
+	}
+}

@@ -1,7 +1,6 @@
 var express = require("express");
 var app = express();
 const fs = require("fs");
-const readline = require("readline");
 const ytdl = require("ytdl-core");
 const ytpl = require("ytpl");
 const ffmpeg = require("fluent-ffmpeg");
@@ -11,32 +10,8 @@ const types = require("./inputTypes");
 const path = require("path");
 const FormData = require("form-data");
 const fetch = require("node-fetch");
+const { File } = require("./db.js");
 
-const PATH_TO_INDEXFILE = path.join(__dirname, "../music/index.json");
-const HOST = process.env.HOST || "localhost";
-const PORT = process.env.PORT || 3010;
-const SERVER_URL =
-	process.env.NO_PORT_EXPOSE == "yes" ? HOST : HOST + ":" + PORT;
-
-if (!fs.existsSync(PATH_TO_INDEXFILE)) {
-	fs.writeFileSync(PATH_TO_INDEXFILE, "[]");
-}
-
-app.use(express.json());
-app.use(cors());
-
-app.listen(PORT, function () {
-	console.log("[NodeJS] Application Listening on Port " + PORT);
-});
-app.get("/", (req, res) => {
-	var html = fs.readFileSync(`${__dirname}/static/index.html`);
-	html = String(html).replace("--HOST--", SERVER_URL);
-	res.send(html);
-});
-app.use("/", express.static("./static"));
-app.get("/list", (req, res) => {
-	res.sendFile(PATH_TO_INDEXFILE);
-});
 app.post("/upload", (req, res) => {
 	const { videoId, title, publisher } = req.body;
 	console.log("downloading...", videoId);
@@ -58,14 +33,12 @@ app.post("/upload", (req, res) => {
 			});
 
 			const form = new FormData();
-			const buffer = fs.readFileSync(
+			const buffer = fs.createReadStream(
 				path.join(__dirname, `../music/${videoId}.mp3`)
 			);
 			const fileName = videoId + ".mp3";
 
 			form.append("file", buffer, {
-				contentType: "text/plain",
-				name: "file",
 				filename: fileName,
 			});
 
@@ -85,7 +58,10 @@ app.post("/upload", (req, res) => {
 						filename: videoId + ".mp3",
 						file: json.file,
 					});
-					fs.writeFileSync(PATH_TO_INDEXFILE, JSON.stringify(filesList));
+					fs.writeFileSync(
+						PATH_TO_INDEXFILE,
+						JSON.stringify(filesList)
+					);
 					console.log("File Uploaded");
 					fs.rmSync(path.join(__dirname, `../music/${videoId}.mp3`));
 					console.log("deleted file locally");
@@ -102,7 +78,10 @@ app.post("/upload", (req, res) => {
 						publisher: publisher,
 						filename: videoId + ".mp3",
 					});
-					fs.writeFileSync(PATH_TO_INDEXFILE, JSON.stringify(filesList));
+					fs.writeFileSync(
+						PATH_TO_INDEXFILE,
+						JSON.stringify(filesList)
+					);
 				});
 		});
 });
@@ -248,7 +227,9 @@ async function getInputData(input, type) {
 				""
 			);
 			let vid_m = lastChunk.replace(/&list=.{34}&.*$/, "");
-			let pid_m = lastChunk.replace(/^(.{11}&list=)/, "").replace(/(&.*)$/, "");
+			let pid_m = lastChunk
+				.replace(/^(.{11}&list=)/, "")
+				.replace(/(&.*)$/, "");
 			data = {
 				videoId: vid_m,
 				video: await ytdl.getBasicInfo(vid_m),
