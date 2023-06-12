@@ -61,6 +61,7 @@ router.post("/add-song", async (req, res) => {
 	}
 
 	let sData = await createSongData(key);
+	console.log(sData);
 
 	let artist;
 	if (await artistWithKeyExists(sData.artist.key)) {
@@ -91,7 +92,9 @@ router.post("/add-song", async (req, res) => {
 	Ffmpeg(yt_stream)
 		.save(tmpFilePath)
 		.on("end", async () => {
+			console.log("try to upload file");
 			let result = await uploadFile(tmpFilePath);
+			console.log("fileupload result is there");
 			console.log(result);
 			if (result.ok) {
 				await song.createLocation({
@@ -103,6 +106,9 @@ router.post("/add-song", async (req, res) => {
 				});
 				fs.rmSync(tmpFilePath);
 				// reload all the associations and songdata and send to client
+				await song.reload({ include: [Artist, Location] });
+				res.send(song);
+			} else {
 				await song.reload({ include: [Artist, Location] });
 				res.send(song);
 			}

@@ -20,7 +20,11 @@ export async function uploadFile(path) {
 		});
 		let result = await res.json();
 
-		return { ok: true, result: result };
+		if (result.ok) {
+			return { ok: true, result: result };
+		} else {
+			return { ok: false, result: result };
+		}
 	} catch (err) {
 		return { ok: false, error: err };
 	}
