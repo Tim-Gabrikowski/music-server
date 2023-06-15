@@ -109,6 +109,7 @@ router.post("/add-song", async (req, res) => {
 				await song.reload({ include: [Artist, Location] });
 				res.send(song);
 			} else {
+				// reload all the associations and songdata and send to client
 				await song.reload({ include: [Artist, Location] });
 				res.send(song);
 			}

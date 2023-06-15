@@ -14,17 +14,22 @@ npm install
 3. Declare environment vars. For that create a `.env` file in the root of the project containing the following:
 
 ```env
-HOST=[Hostname/ip/domain]
-PORT=[Port to listen to]
-NO_PORT_EXPOSE=no
-```
+HOST=
+PORT=
+DATABASE_NAME=
+DATABASE_USERNAME=
+DATABASE_PASSWORD=
+DATABASE_PORT=
+DATABASE_HOST=
 
-The frontend will try to reach your server on HOST:PORT. If you have a Domain and dont wan't to expose the Port, set `NO_PORT_EXPOSE=yes` in the `.env` file.
+FILESERVER_TOKEN=
+FILESERVER_URL=
+```
 
 4. Run the app:
 
 ```bash
-npm run start
+npm run dev
 ```
 
 ## Info
