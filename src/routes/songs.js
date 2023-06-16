@@ -1,8 +1,14 @@
 import express from "express";
 import { Artist, Song, Location } from "../db.js";
 import ytdl from "ytdl-core";
+import ytpl from "ytpl";
 import path from "path";
 import { uploadFile } from "./upload.js";
+import {
+	getInputType,
+	getInputData,
+	createSongData,
+} from "../tools/input_converter.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -51,8 +57,56 @@ router.get("/key/:key", async (req, res) => {
 router.post("/add-song", async (req, res) => {
 	let { key } = req.body;
 
+	await addSong(key, (result) => res.send(result));
+});
+
+router.post("/add-songs", async (req, res) => {
+	let { keys } = req.body;
+
+	let results = [];
+
+	for (let i = 0; i < keys.length; i++) {
+		const k = keys[i];
+		await addSong(k, (result) => {
+			results.push(result);
+			if (results.length == keys.length) return res.send(results);
+		});
+	}
+});
+
+router.get("/get-data", async (req, res) => {
+	const { input } = req.query;
+
+	let type = await getInputType(input);
+	let data = await getInputData(input, type);
+
+	// let songs = [];
+
+	// for (let i = 0; i < data.keys.length; i++) {
+	// 	const key = data.keys[i];
+
+	// 	let song = await createSongData(key);
+
+	// 	songs.push(song);
+	// }
+
+	res.send({ type: type, data: data });
+});
+
+async function songWithKeyExists(key) {
+	let song = await Song.findOne({ where: { key: key } });
+
+	return !(song == undefined || song == null);
+}
+async function artistWithKeyExists(key) {
+	let artist = await Artist.findOne({ where: { key: key } });
+
+	return !(artist == undefined || artist == null);
+}
+
+async function addSong(key, cb) {
 	if (await songWithKeyExists(key)) {
-		return res.send(
+		return cb(
 			await Song.findOne({
 				where: { key: key },
 				include: [Artist, Location],
@@ -107,61 +161,15 @@ router.post("/add-song", async (req, res) => {
 				fs.rmSync(tmpFilePath);
 				// reload all the associations and songdata and send to client
 				await song.reload({ include: [Artist, Location] });
-				res.send(song);
+				cb(song);
 			} else {
 				// reload all the associations and songdata and send to client
 				await song.reload({ include: [Artist, Location] });
-				res.send(song);
+				cb(song);
 			}
 		})
 		.on("error", async (err) => {
 			await song.reload({ include: [Artist, Location] });
-			res.send(song);
+			cb(song);
 		});
-});
-
-async function createSongData(ytKey) {
-	let data = await ytdl.getBasicInfo(ytKey);
-
-	let sData = {
-		title: data.videoDetails.title,
-		key: ytKey,
-		seconds: data.videoDetails.lengthSeconds,
-		url: data.videoDetails.video_url,
-		embedUrl: data.videoDetails.embed.iframeUrl,
-		thumbnail: getThumbnail(data.videoDetails.thumbnail.thumbnails).url,
-		artist: {
-			key: data.videoDetails.author.id,
-			name: data.videoDetails.author.name,
-			user: data.videoDetails.author.user,
-			url: data.videoDetails.author.channel_url,
-			thumbnail: getThumbnail(data.videoDetails.author.thumbnails).url,
-		},
-	};
-
-	return sData;
-}
-
-async function songWithKeyExists(key) {
-	let song = await Song.findOne({ where: { key: key } });
-
-	return !(song == undefined || song == null);
-}
-async function artistWithKeyExists(key) {
-	let artist = await Artist.findOne({ where: { key: key } });
-
-	return !(artist == undefined || artist == null);
-}
-
-function getThumbnail(thumbnails) {
-	let highest = 0;
-	let best = {};
-	for (let i = 0; i < thumbnails.length; i++) {
-		const thumb = thumbnails[i];
-		if (thumb.width > highest) {
-			best = thumb;
-			highest = thumb.width;
-		}
-	}
-	return best;
 }
