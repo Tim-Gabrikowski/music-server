@@ -11,7 +11,7 @@ export async function uploadFile(path) {
 
 		form.append("file", createReadStream(path));
 
-		let res = await fetch("http://localhost:3030/files/upload", {
+		let res = await fetch(process.env.FILESERVER_URL + "/files/upload", {
 			method: "POST",
 			headers: {
 				Authorization: "SOFTWARE " + process.env.FILESERVER_TOKEN,

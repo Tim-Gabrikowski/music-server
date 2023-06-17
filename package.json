@@ -24,7 +24,7 @@
 		"npm": "^9.6.1",
 		"readline": "^1.3.0",
 		"sequelize": "^6.31.1",
-		"ytdl-core": "^4.11.2",
+		"ytdl-core": "^4.11.4",
 		"ytpl": "^2.3.0"
 	},
 	"nodemonConfig": {
