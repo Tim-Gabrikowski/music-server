@@ -171,5 +171,6 @@ async function addSong(key, cb) {
 		.on("error", async (err) => {
 			await song.reload({ include: [Artist, Location] });
 			cb(song);
+			console.log(err);
 		});
 }

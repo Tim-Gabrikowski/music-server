@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  service:
+    image: registry.gitlab.com/timgabhh/docker/music-server:latest
+    ports:
+      - "3010:3010"
+    volumes:
+      - "./keys:/app/keys"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_HOST=host.docker.internal
