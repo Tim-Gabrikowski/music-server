@@ -27,7 +27,7 @@ router.get("/", (req, res) => {
 });
 
 router.get("/list", async (req, res) => {
-	let songs = await Song.findAll();
+	let songs = await Song.findAll({ include: [Artist, Location] });
 	res.send(songs);
 });
 
