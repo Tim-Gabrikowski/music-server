@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import * as logger from "./logger.js";
 
 const PORT = process.env.PORT || 3010;
 
@@ -15,5 +16,5 @@ app.use("/songs", songsRouter);
 app.use("/artists", artistsRouter);
 
 app.listen(PORT, function () {
-	console.log("[NodeJS] Application Listening on Port " + PORT);
+	logger.info("MAIN", "Application Listening on Port " + PORT);
 });

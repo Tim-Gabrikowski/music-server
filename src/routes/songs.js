@@ -80,17 +80,59 @@ router.get("/get-data", async (req, res) => {
 	let type = await getInputType(input);
 	let data = await getInputData(input, type);
 
-	// let songs = [];
-
-	// for (let i = 0; i < data.keys.length; i++) {
-	// 	const key = data.keys[i];
-
-	// 	let song = await createSongData(key);
-
-	// 	songs.push(song);
-	// }
-
 	res.send({ type: type, data: data });
+});
+
+router.post("/redownload", async (req, res) => {
+	const { key } = req.body;
+	if (!(await songWithKeyExists(key)))
+		return res.status(404).send({
+			ok: false,
+			message:
+				"No song with that key in Database. Add it with normal route first",
+		});
+
+	let song = await Song.findOne({
+		where: { key: key },
+		include: [Artist, Location],
+	});
+
+	if (song.Locations.filter((l) => l.type == "stream").length != 0) {
+		return res.send(song);
+	}
+
+	// download file
+	let tmpFilePath = path.join(__dirname, `../../music/${key}.mp3`);
+	let yt_stream = ytdl(key, {
+		quality: "highestaudio",
+	});
+	Ffmpeg(yt_stream)
+		.save(tmpFilePath)
+		.on("end", async () => {
+			let result = await uploadFile(tmpFilePath);
+			if (result.ok) {
+				await song.createLocation({
+					type: "stream",
+					path:
+						process.env.FILESERVER_URL +
+							"/download/stream/" +
+							result.result.file.id || "",
+				});
+				fs.rmSync(tmpFilePath);
+				// reload all the associations and songdata and send to client
+				await song.reload({ include: [Artist, Location] });
+				res.send(song);
+			} else {
+				// reload all the associations and songdata and send to client
+				await song.reload({ include: [Artist, Location] });
+				res.status(500).send(song);
+			}
+		})
+		.on("error", async (err) => {
+			await song.reload({ include: [Artist, Location] });
+			res.status(500).send(song);
+			console.log(err);
+		});
 });
 
 async function songWithKeyExists(key) {
@@ -146,10 +188,7 @@ async function addSong(key, cb) {
 	Ffmpeg(yt_stream)
 		.save(tmpFilePath)
 		.on("end", async () => {
-			console.log("try to upload file");
 			let result = await uploadFile(tmpFilePath);
-			console.log("fileupload result is there");
-			console.log(result);
 			if (result.ok) {
 				await song.createLocation({
 					type: "stream",

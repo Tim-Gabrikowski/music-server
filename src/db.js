@@ -1,4 +1,5 @@
 import { Sequelize, Model, DataTypes } from "sequelize";
+import * as logger from "./logger.js";
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -23,7 +24,7 @@ const connection = new Sequelize(
 
 function dbLogger() {
 	return (message) => {
-		console.log("DB:", message);
+		logger.debug("DATABASE", message);
 	};
 }
 
