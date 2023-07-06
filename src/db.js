@@ -126,7 +126,7 @@ User.init(
 			autoIncrement: true,
 			primaryKey: true,
 		},
-		uuid: {
+		gid_uuid: {
 			type: DataTypes.STRING,
 		},
 		name: {
@@ -152,6 +152,12 @@ Playlist.init(
 			autoIncrement: true,
 			primaryKey: true,
 		},
+		key: {
+			type: DataTypes.STRING,
+			unique: "playlist_key",
+			allowNull: false,
+			defaultValue: "",
+		},
 		title: {
 			type: DataTypes.STRING,
 		},
@@ -166,6 +172,22 @@ Playlist.init(
 		sequelize: connection,
 		tableName: "Playlists",
 		timestamps: false,
+		hooks: {
+			afterFind: async (records, options) => {
+				if (records instanceof Array) {
+					for (let i = 0; i < records.length; i++) {
+						const list = records[i];
+						let c = await list.countSongs();
+						records[i].dataValues.songCount = c;
+					}
+				} else if (typeof records == null) {
+					return;
+				} else if (records instanceof Playlist) {
+					let c = await records.countSongs();
+					records.dataValues.songCount = c;
+				}
+			},
+		},
 	}
 );
 
@@ -180,7 +202,7 @@ PlaylistSong.init(
 	}
 );
 
-Song.hasMany(Location);
+Song.hasMany(Location, { onDelete: "cascade" });
 Location.belongsTo(Song);
 
 Playlist.belongsToMany(Song, { through: PlaylistSong });

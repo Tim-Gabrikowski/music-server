@@ -11,10 +11,12 @@ app.use(express.json());
 
 import songsRouter from "./routes/songs.js";
 import artistsRouter from "./routes/artists.js";
+import playlistsRouter from "./routes/playlists.js";
 
 app.use("/songs", songsRouter);
+app.use("/playlists", playlistsRouter);
 app.use("/artists", artistsRouter);
 
 app.listen(PORT, function () {
-	logger.info("MAIN", "Application Listening on Port " + PORT);
+    logger.info("MAIN", "Application Listening on Port " + PORT);
 });

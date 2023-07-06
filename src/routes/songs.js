@@ -1,9 +1,10 @@
 import express from "express";
 import { Artist, Song, Location } from "../db.js";
 import ytdl from "ytdl-core";
-import ytpl from "ytpl";
+import * as logger from "../logger.js";
 import path from "path";
 import { uploadFile } from "./upload.js";
+import { inspect } from "util";
 import {
 	getInputType,
 	getInputData,
@@ -85,12 +86,7 @@ router.get("/get-data", async (req, res) => {
 
 router.post("/redownload", async (req, res) => {
 	const { key } = req.body;
-	if (!(await songWithKeyExists(key)))
-		return res.status(404).send({
-			ok: false,
-			message:
-				"No song with that key in Database. Add it with normal route first",
-		});
+	if (!(await songWithKeyExists(key))) return res.redirect(307, "./add-song");
 
 	let song = await Song.findOne({
 		where: { key: key },
@@ -124,14 +120,15 @@ router.post("/redownload", async (req, res) => {
 				res.send(song);
 			} else {
 				// reload all the associations and songdata and send to client
+				logger.error("REDOWNLOAD", inspect(result));
 				await song.reload({ include: [Artist, Location] });
 				res.status(500).send(song);
 			}
 		})
 		.on("error", async (err) => {
+			logger.error("REDOWNLOAD", err);
 			await song.reload({ include: [Artist, Location] });
 			res.status(500).send(song);
-			console.log(err);
 		});
 });
 
@@ -203,11 +200,13 @@ async function addSong(key, cb) {
 				cb(song);
 			} else {
 				// reload all the associations and songdata and send to client
+				logger.error("REDOWNLOAD", inspect(result));
 				await song.reload({ include: [Artist, Location] });
 				cb(song);
 			}
 		})
 		.on("error", async (err) => {
+			logger.error("REDOWNLOAD", err);
 			await song.reload({ include: [Artist, Location] });
 			cb(song);
 			console.log(err);
