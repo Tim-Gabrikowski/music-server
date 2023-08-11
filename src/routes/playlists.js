@@ -25,9 +25,10 @@ router.get("/one/:key", async (req, res) => {
 });
 
 router.post("/create", async (req, res) => {
+	let key = randomBytes(12).toString("base64url");
 	let list = await Playlist.build({
-		key: randomBytes(12).toString("base64url"),
-		title: req.body.title || "Playlist #" + randomBytes(3).toString("hex"),
+		key: key,
+		title: req.body.title || "Playlist #" + key,
 		description: req.body.description || "",
 	}).save();
 
@@ -64,4 +65,20 @@ router.put("/add-to-list", async (req, res) => {
 	});
 
 	res.send(list);
+});
+
+router.put("/remove-from-list", async (req, res) => {
+	let songKey = req.body.song;
+	let playlistKey = req.body.playlist;
+
+	let song = await Song.findOne({ where: { key: songKey } });
+	let playlist = await Playlist.findOne({ where: { key: playlistKey } });
+
+	await playlist.removeSong(song);
+
+	await playlist.reload({
+		include: [{ model: Song, include: [Location, Artist] }],
+	});
+
+	res.send(playlist);
 });
