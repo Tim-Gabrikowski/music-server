@@ -1,5 +1,6 @@
 import express from "express";
 import { Artist, Song, Location } from "../db.js";
+import { render, renderAllSync, setSync } from "templatesjs";
 import ytdl from "ytdl-core";
 import * as logger from "../logger.js";
 import path from "path";
@@ -25,6 +26,43 @@ export default router = express.Router();
 
 router.get("/", (req, res) => {
 	res.send({ ok: true, route: "/songs", method: "GET" });
+});
+
+router.get("/share/:key", async (req, res) => {
+	let songKey = req.params.key;
+	let song = await Song.findOne({
+		where: { key: songKey },
+		include: [Artist],
+	});
+	let yt_loc = await Location.findOne({
+		where: { type: "youtube", SongId: song.id },
+	});
+	yt_loc = yt_loc || {};
+
+	let embed_loc = await Location.findOne({
+		where: { type: "youtube_embed", SongId: song.id },
+	});
+	embed_loc = embed_loc || {};
+
+	let stream_loc = await Location.findOne({
+		where: { type: "stream", SongId: song.id },
+	});
+	stream_loc = stream_loc || {};
+
+	//load and render
+	let html = fs.readFileSync(
+		path.join(__dirname, "..", "static", "share", "index.html")
+	);
+	setSync(html);
+	let data = {
+		song: song.dataValues,
+		artist: song.dataValues.Artist,
+		location_yt: yt_loc.dataValues || "",
+		location_embed: embed_loc.dataValues || "",
+		location_stream: stream_loc.dataValues || "",
+	};
+	let out = renderAllSync(data);
+	res.send(out);
 });
 
 router.get("/list", async (req, res) => {

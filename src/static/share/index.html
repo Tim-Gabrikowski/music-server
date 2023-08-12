@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Tim Gabrkowski | MusicServer</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			body {
+				margin: 0;
+				background-color: #2e3440;
+				color: #eceff4;
+				font-family: "Ubuntu Mono", monospace;
+			}
+			#main_cont {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 100vh;
+				width: 100vw;
+			}
+			.column {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				text-align: center;
+				width: 600px;
+			}
+			iframe {
+				width: 600px;
+				height: 600px;
+				object-fit: contain;
+			}
+			h1,
+			h2 {
+				margin: 5px;
+			}
+			.box {
+				background-color: #3b4252;
+				border-radius: 10px;
+				margin-bottom: 10px;
+				padding: 5px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="main_cont">
+			<div class="column">
+				<div class="box">
+					<iframe src="<%location_embed.path%>"></iframe>
+				</div>
+				<div class="box">
+					<h1><%song.title%></h1>
+					<h2><%artist.name%></h2>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
