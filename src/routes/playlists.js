@@ -6,6 +6,10 @@ import { randomBytes } from "crypto";
 let router;
 export default router = express.Router();
 
+router.get("/", (req, res) => {
+	res.send({ ok: true, route: "/playlists", method: "GET" });
+});
+
 router.get("/list", async (req, res) => {
 	let lists = await Playlist.findAll();
 	res.send(lists);
