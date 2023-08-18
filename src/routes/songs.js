@@ -34,6 +34,10 @@ router.get("/share/:key", async (req, res) => {
 		where: { key: songKey },
 		include: [Artist],
 	});
+
+	if (song == undefined || song == null)
+		return res.status(404).send({ ok: false, message: "Song not found" });
+
 	let yt_loc = await Location.findOne({
 		where: { type: "youtube", SongId: song.id },
 	});
@@ -75,7 +79,8 @@ router.get("/id/:id", async (req, res) => {
 
 	let song = await Song.findByPk(id, { include: [Artist, Location] });
 
-	if (song == undefined || song == null) return res.sendStatus(404);
+	if (song == undefined || song == null)
+		return res.status(404).send({ ok: false, message: "Song not found" });
 
 	res.send(song);
 });
@@ -88,7 +93,8 @@ router.get("/key/:key", async (req, res) => {
 		include: [Artist, Location],
 	});
 
-	if (song == undefined || song == null) return res.sendStatus(404);
+	if (song == undefined || song == null)
+		return res.status(404).send({ ok: false, message: "Song not found" });
 
 	res.send(song);
 });
