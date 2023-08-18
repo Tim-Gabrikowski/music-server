@@ -18,5 +18,9 @@ app.use("/playlists", playlistsRouter);
 app.use("/artists", artistsRouter);
 
 app.listen(PORT, function () {
-    logger.info("MAIN", "Application Listening on Port " + PORT);
+	logger.info("MAIN", "Application Listening on Port " + PORT);
+});
+
+process.on("uncaughtException", (error) => {
+	logger.critical("MAIN", error);
 });
