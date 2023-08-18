@@ -130,16 +130,13 @@ router.get("/get-data", async (req, res) => {
 
 router.post("/redownload", async (req, res) => {
 	const { key } = req.body;
+	console.log(req.body);
 	if (!(await songWithKeyExists(key))) return res.redirect(307, "./add-song");
 
 	let song = await Song.findOne({
 		where: { key: key },
 		include: [Artist, Location],
 	});
-
-	if (song.Locations.filter((l) => l.type == "stream").length != 0) {
-		return res.send(song);
-	}
 
 	// download file
 	let tmpFilePath = path.join(__dirname, `../../music/${key}.mp3`);
@@ -151,13 +148,39 @@ router.post("/redownload", async (req, res) => {
 		.on("end", async () => {
 			let result = await uploadFile(tmpFilePath);
 			if (result.ok) {
-				await song.createLocation({
-					type: "stream",
-					path:
-						process.env.FILESERVER_URL +
-							"/download/stream/" +
-							result.result.file.id || "",
+				let loc = await Location.findOne({
+					where: { SongId: song.id, type: "stream" },
 				});
+
+				if (loc == undefined || loc == null) {
+					await song.createLocation({
+						type: "stream",
+						path:
+							process.env.FILESERVER_URL +
+								"/download/stream/" +
+								result.result.file.id || "",
+					});
+				} else {
+					loc.dataValues.path =
+						process.env.FILESERVER_URL +
+						"/download/stream/" +
+						result.result.file.id;
+
+					await Location.update(
+						{
+							path:
+								process.env.FILESERVER_URL +
+								"/download/stream/" +
+								result.result.file.id,
+						},
+						{
+							where: {
+								id: loc.id,
+							},
+						}
+					);
+				}
+
 				fs.rmSync(tmpFilePath);
 				// reload all the associations and songdata and send to client
 				await song.reload({ include: [Artist, Location] });
