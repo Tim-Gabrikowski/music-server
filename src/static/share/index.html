@@ -2,61 +2,105 @@
 <html>
 	<head>
 		<title>Tim Gabrkowski | MusicServer</title>
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap"
 			rel="stylesheet"
+			href="https://tim-gabrikowski.github.io/TimWizardUI/versions/v1.2.0/style.css"
+			type="text/css"
 		/>
-		<style>
-			body {
-				margin: 0;
-				background-color: #2e3440;
-				color: #eceff4;
-				font-family: "Ubuntu Mono", monospace;
-			}
-			#main_cont {
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				height: 100vh;
-				width: 100vw;
-			}
-			.column {
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-				text-align: center;
-				width: 600px;
-			}
-			iframe {
-				width: 600px;
-				height: 600px;
-				object-fit: contain;
-			}
-			h1,
-			h2 {
-				margin: 5px;
-			}
-			.box {
-				background-color: #3b4252;
-				border-radius: 10px;
-				margin-bottom: 10px;
-				padding: 5px;
-			}
-		</style>
+		<script
+			type="text/javascript"
+			src="https://tim-gabrikowski.github.io/TimWizardUI/versions/v1.2.0/script.js"
+		></script>
+		<link
+			rel="stylesheet"
+			href="https://tim-gabrikowski.github.io/TimWizardUI/plugins/audioplayer/style.css"
+			type="text/css"
+		/>
+		<script
+			type="text/javascript"
+			src="https://tim-gabrikowski.github.io/TimWizardUI/plugins/audioplayer/script.js"
+		></script>
 	</head>
-	<body>
-		<div id="main_cont">
-			<div class="column">
-				<div class="box">
-					<iframe src="<%location_embed.path%>"></iframe>
-				</div>
-				<div class="box">
-					<h1><%song.title%></h1>
-					<h2><%artist.name%></h2>
-				</div>
-			</div>
-		</div>
-	</body>
+	<body></body>
+	<script>
+		const songS = "--DATA--"
+			.replace(/&sq;/g, "'")
+			.replace(/&dq;/g, '"')
+			.replace(/&bt;/g, "`");
+
+		const song = JSON.parse(songS);
+		console.log(song);
+
+		let streamUrl = song.Locations.find((l) => l.type == "stream").path;
+
+		const mainPage = page_create({
+			id: "main_page",
+			title: song.title,
+			center: true,
+			style: {
+				width: "500px",
+			},
+			layout: "column",
+			children: [
+				text_create({ text: song.Artist.name }),
+				layout_create({
+					color: "red",
+					border: true,
+					style: { width: "500px", margin: "10px" },
+					children: [
+						image_create({
+							src: song.thumbnail,
+							style: { width: "500px" },
+						}),
+					],
+				}),
+				layout_create({
+					color: "red",
+					border: true,
+					style: {
+						width: "500px",
+						margin: "10px",
+						alignItems: "center",
+						justifyContent: "space-around",
+					},
+					type: "row",
+					children: [
+						image_create({
+							id: "w_youtube",
+							src: "../../static/youtube.svg",
+							alt: "youtube logo",
+							style: {
+								height: "30px",
+								margin: "30px",
+							},
+						}),
+						button_create({
+							label: "Auf Youtube ansehen",
+							color: "red",
+							onclick: () => {
+								let youtubeUrl = song.Locations.find(
+									(l) => l.type == "youtube"
+								).path;
+								window.location = youtubeUrl;
+							},
+						}),
+					],
+				}),
+				audioplayer_create({
+					id: "audioplayer",
+					className: "audioplayer",
+					color: "red",
+					src: streamUrl || "",
+					songData: {
+						title: song.title,
+						artist: song.Artist.name,
+					},
+					onended: () => {
+						console.log("playback ended!");
+					},
+				}),
+			],
+		});
+		mainPage.show();
+	</script>
 </html>

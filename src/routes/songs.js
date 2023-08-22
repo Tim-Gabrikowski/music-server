@@ -32,40 +32,22 @@ router.get("/share/:key", async (req, res) => {
 	let songKey = req.params.key;
 	let song = await Song.findOne({
 		where: { key: songKey },
-		include: [Artist],
+		include: [Artist, Location],
 	});
 
 	if (song == undefined || song == null)
 		return res.status(404).send({ ok: false, message: "Song not found" });
 
-	let yt_loc = await Location.findOne({
-		where: { type: "youtube", SongId: song.id },
-	});
-	yt_loc = yt_loc || {};
-
-	let embed_loc = await Location.findOne({
-		where: { type: "youtube_embed", SongId: song.id },
-	});
-	embed_loc = embed_loc || {};
-
-	let stream_loc = await Location.findOne({
-		where: { type: "stream", SongId: song.id },
-	});
-	stream_loc = stream_loc || {};
-
 	//load and render
 	let html = fs.readFileSync(
 		path.join(__dirname, "..", "static", "share", "index.html")
 	);
-	setSync(html);
-	let data = {
-		song: song.dataValues,
-		artist: song.dataValues.Artist,
-		location_yt: yt_loc.dataValues || "",
-		location_embed: embed_loc.dataValues || "",
-		location_stream: stream_loc.dataValues || "",
-	};
-	let out = renderAllSync(data);
+	let content = JSON.stringify(song)
+		.replace(/\'/g, "&sq;")
+		.replace(/\"/g, "&dq;")
+		.replace(/\`/g, "&bt;");
+
+	let out = html.toString().replace("--DATA--", content);
 	res.send(out);
 });
 
