@@ -41,15 +41,26 @@ router.post("/create", async (req, res) => {
 
 	list.dataValues.songCount = 0;
 
-	if (req.body.songs instanceof Array) {
+	if (req.body.songs instanceof Array && req.body.songs.length > 0) {
+		let thn = false;
 		for (let i = 0; i < req.body.songs.length; i++) {
 			const key = req.body.songs[i];
 			let song = await Song.findOne({ where: { key: key } });
-			list.addSong(song);
+
+			if (song != null) {
+				if (!thn) {
+					await Playlist.update(
+						{ thumbnail: song.dataValues.thumbnail },
+						{ where: { key: list.dataValues.key } }
+					);
+					thn = true;
+				}
+				await list.addSong(song);
+			}
 		}
-		list.dataValues.songCount = req.body.songs.length;
 	}
 
+	await list.reload({ include: [Song] });
 	res.send(list);
 });
 
