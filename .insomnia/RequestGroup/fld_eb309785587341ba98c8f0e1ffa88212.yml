@@ -1,0 +1,10 @@
+_id: fld_eb309785587341ba98c8f0e1ffa88212
+type: RequestGroup
+parentId: wrk_e278f6ef8c8f42c69ddc1acc853b5407
+modified: 1686318989674
+created: 1686318989674
+name: artists
+description: ""
+environment: {}
+environmentPropertyOrder: null
+metaSortKey: -1686318989674

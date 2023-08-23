@@ -1,0 +1,64 @@
+_id: req_50fddc8c99f2401ca2dac821b278729e
+type: Request
+parentId: fld_830644cc820b4520b3fa7c50c524fe17
+modified: 1692725117802
+created: 1686252991144
+url: "{{_.host}}/songs/key/henzKOC78nw"
+name: / key / { key }
+description: >-
+  # Get Song
+
+
+  Returns a single Song Object when given the Key of the song as URL-Part
+
+
+  ```json
+
+  {
+  	"id": 1,
+  	"title": "We'll Meet Again",
+  	"key": "pl3yAWg4vRc",
+  	"seconds": 196,
+  	"thumbnail": "https://i.ytimg.com/vi_webp/pl3yAWg4vRc/maxresdefault.webp",
+  	"url": "https://www.youtube.com/watch?v=pl3yAWg4vRc",
+  	"UserId": null,
+  	"UploadedBy": null,
+  	"ArtistId": 1,
+  	"Artist": {
+  		"id": 1,
+  		"name": "TheFatRat - Topic",
+  		"key": "UCa_UMppcMsHIzb5LDx1u9zQ",
+  		"user": "UClyW5VlmRBdFlRWLpMoHlbQ",
+  		"url": "https://www.youtube.com/channel/UCa_UMppcMsHIzb5LDx1u9zQ",
+  		"thumbnail": "https://yt3.ggpht.com/vqx6-hhQDaWcbjjJWWp5H58l8LEBxX1gStQPXJUL2fSfUyTHgpOYrZ23v7EuURuWwM7tPwJJLw=s176-c-k-c0x00ffffff-no-rj"
+  	},
+  	"Locations": [
+  		{
+  			"id": 1,
+  			"type": "youtube",
+  			"path": "https://www.youtube.com/watch?v=pl3yAWg4vRc",
+  			"SongId": 1
+  		},
+  		{
+  			"id": 2,
+  			"type": "youtube_embed",
+  			"path": "https://www.youtube.com/embed/pl3yAWg4vRc",
+  			"SongId": 1
+  		}
+  	]
+  }
+
+  ```
+method: GET
+body: {}
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1686252190465
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

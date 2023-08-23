@@ -1,0 +1,47 @@
+_id: req_f583876fc2d74ab2af8d2a6ad24e9aa2
+type: Request
+parentId: fld_06463c82849d41fb907616b94b92998d
+modified: 1692264725908
+created: 1688665569391
+url: "{{_.host}}/playlists/list"
+name: / list
+description: |-
+  # List Playlists
+
+  This Endpoint returns a List of all known Playlists.
+
+  ```json
+  [
+  	{
+  		"id": 1,
+  		"key": "HEvVbatA1Ad5Hdcv",
+  		"title": "SuperPlaylist2",
+  		"description": "Super mega fun Playlist",
+  		"thumbnail": null,
+  		"UserId": null,
+  		"songCount": 0
+  	},
+  	{
+  		"id": 2,
+  		"key": "cAqpjtnBanw1gcYt",
+  		"title": "SuperPlaylist2",
+  		"description": "Super mega fun Playlist",
+  		"thumbnail": null,
+  		"UserId": null,
+  		"songCount": 0
+  	}
+  ]
+  ```
+method: GET
+body: {}
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1688665569391
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

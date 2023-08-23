@@ -1,0 +1,70 @@
+_id: req_07282227f1bc45939f5b13a55f3563c4
+type: Request
+parentId: fld_830644cc820b4520b3fa7c50c524fe17
+modified: 1692255947915
+created: 1686858149114
+url: "{{_.host}}/songs/get-data"
+name: / get-data
+description: >
+  # Probe data from Link
+
+
+  This endpoint takes a link or id of a Youtube Video or Playlist as URL-Query (`input`) and extracts the included Songs.
+
+
+  `https://tim.gabrikowski.de/musicserver/songs/get-data?input=YHJVMELihGc`
+
+
+  ```json
+
+  {
+  	"type": "video id",
+  	"data": {
+  		"keys": [
+  			"YHJVMELihGc"
+  		],
+  		"songs": [
+  			{
+  				"title": "Unstoppable",
+  				"key": "YHJVMELihGc",
+  				"seconds": "193",
+  				"url": "https://www.youtube.com/watch?v=YHJVMELihGc",
+  				"embedUrl": "https://www.youtube.com/embed/YHJVMELihGc",
+  				"thumbnail": "https://i.ytimg.com/vi_webp/YHJVMELihGc/maxresdefault.webp",
+  				"artist": {
+  					"key": "UCqzGLavT7stfyWMAfCXW-CA",
+  					"name": "The Score - Topic",
+  					"user": "UCdQICt_YIo4FEOaLtTOi4RA",
+  					"url": "https://www.youtube.com/channel/UCqzGLavT7stfyWMAfCXW-CA",
+  					"thumbnail": "https://yt3.ggpht.com/tA3vpxpziVvW7oOEhwdPC2Nvd0u9QHxJXuAV1mf4nS5KzQFtCMxkAGqHy6xkq6RwLOie-HUh=s176-c-k-c0x00ffffff-no-rj"
+  				}
+  			}
+  		]
+  	}
+  }
+
+  ```
+
+
+
+  The Object has the property `type` where you get the type of the input given (e.g. `video id`)
+
+
+  The `data` Object contains an Array of Youtube VideoIDs (`keys`) and an Array of the Songs with their Data (`songs`).
+method: GET
+body: {}
+parameters:
+  - id: pair_c5f2486daec54af097368dbe72bb9786
+    name: input
+    value: YHJVMELihGc
+    description: ""
+headers: []
+authentication: {}
+metaSortKey: -1686252665426.75
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

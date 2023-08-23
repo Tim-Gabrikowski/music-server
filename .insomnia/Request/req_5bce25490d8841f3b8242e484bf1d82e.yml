@@ -1,0 +1,21 @@
+_id: req_5bce25490d8841f3b8242e484bf1d82e
+type: Request
+parentId: fld_830644cc820b4520b3fa7c50c524fe17
+modified: 1686253055775
+created: 1686249327177
+url: "{{ _.host }}/songs"
+name: /
+description: ""
+method: GET
+body: {}
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1686252457358
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

@@ -1,0 +1,51 @@
+_id: req_fe5b3d2aa50340e1814fe848bf128865
+type: Request
+parentId: fld_06463c82849d41fb907616b94b92998d
+modified: 1692811589641
+created: 1688666082274
+url: "{{_.host}}/playlists/create"
+name: / create
+description: >-
+  # Create Playlist
+
+
+  With this endpoint you can Create a new Playlist. Supply a Name and a Description and an Array with the SongKeys that you want to insert.
+
+
+
+  Request:
+
+  ```json
+
+  {
+  	"title": "SuperPlaylist",
+  	"description": "Super mega fun Playlist",
+  	"songs": ["sqjjkGsfBcE"]
+  }
+
+  ```
+
+
+  Server will return the Playlist Object with Songs-List.
+method: POST
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"title": "SuperPlaylist",
+    	"description": "Super mega fun Playlist",
+    	"songs": ["5nK9DAcb1nc"]
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+authentication: {}
+metaSortKey: -1688666082274
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

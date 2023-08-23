@@ -1,0 +1,52 @@
+_id: req_9bf7544fcdf8425fa6e9b5545d85625b
+type: Request
+parentId: fld_830644cc820b4520b3fa7c50c524fe17
+modified: 1692799164251
+created: 1686856902929
+url: "{{_.host}}/songs/add-songs"
+name: / add-songs
+description: >-
+  # Download songs
+
+
+  This Endpoint loads multiple songs to the Server
+
+
+  Supply the Keys of the songs in the request Body like so:
+
+  ```json
+
+  {
+  	"keys": ["YHJVMELihGc"]
+  }
+
+  ```
+
+
+  As Response you an Array of the song objects like in the `/songs/list` request.
+
+
+  ## Note
+
+
+  Due to the Server streaming the video from Youtube and extracting the Audio to a file, this request may take a while. It is recommended to download each song on its own with the `/songs/add-song` endpoint, because the request times out after a given period of time and the download of many songs may take longer than the timeout limit.
+method: POST
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"keys": ["5nK9DAcb1nc", "DFlu2Df652M", "CXU7Xlf8wTI"]
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+authentication: {}
+metaSortKey: -1686252873495.5
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

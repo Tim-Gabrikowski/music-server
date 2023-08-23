@@ -1,0 +1,52 @@
+_id: req_3e27978e1c024ee9b4fbbbad21322e0a
+type: Request
+parentId: fld_830644cc820b4520b3fa7c50c524fe17
+modified: 1692811839796
+created: 1686253289633
+url: "{{_.host}}/songs/add-song"
+name: / add-song
+description: >-
+  # Download song
+
+
+  This Endpoint loads a song to the Server
+
+
+  Supply the Key of the song in the request Body like so:
+
+  ```json
+
+  {
+  	"key": "YHJVMELihGc"
+  }
+
+  ```
+
+
+  As Response you get the song object like in the `/songs/key/{key}` request.
+
+
+  ## Note
+
+
+  Due to the Server streaming the video from Youtube and extracting the Audio to a file, this request may take a while.
+method: POST
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"key": "nl0qCdE5cuo"
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+authentication: {}
+metaSortKey: -1686253289633
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

@@ -1,0 +1,48 @@
+_id: req_04da386e91274c76a8c14ba820be0beb
+type: Request
+parentId: fld_06463c82849d41fb907616b94b92998d
+modified: 1692812754776
+created: 1688670498900
+url: "{{_.host}}/playlists/add-to-list"
+name: / add-to-list
+description: >-
+  # Add Song to Playlist
+
+
+  With this Request you can add one or multiple Songs to a Playlist. Give it the Key of the Playlist and the Keys of the Songs to add them.
+
+
+  Request:
+
+  ```json
+
+  {
+  	"songs": ["dQw4w9WgXcQ"],
+  	"playlist": "gSWO35UeBvfJC6aa"
+  }
+
+  ```
+
+
+  The Server will respond with the updated Playlist Object with Song List.
+method: PUT
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"songs": ["A0HDitIHMXo"],
+    	"playlist": "C7Kc_GBzhL0NliyG"
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+authentication: {}
+metaSortKey: -1688670498900
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

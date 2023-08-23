@@ -1,0 +1,73 @@
+_id: req_6cf01c070eec446981b4914708c3f3e5
+type: Request
+parentId: fld_06463c82849d41fb907616b94b92998d
+modified: 1692811809736
+created: 1688667961635
+url: "{{_.host}}/playlists/one/C7Kc_GBzhL0NliyG"
+name: / one / { key }
+description: >-
+  # Playlist Data
+
+
+  Returns the data of a Playlist with the PlaylistKey specified in the URL. Also includes an Array of Songs in the response (`Songs` property).
+
+
+  ```json
+
+  {
+  	"id": 6,
+  	"key": "gSWO35UeBvfJC6aa",
+  	"title": "SuperPlaylist",
+  	"description": "Super mega fun Playlist",
+  	"thumbnail": null,
+  	"UserId": null,
+  	"Songs": [
+  		{
+  			"id": 131,
+  			"title": "Angel With A Shotgun (nightcore)",
+  			"key": "sqjjkGsfBcE",
+  			"seconds": 193,
+  			"thumbnail": "https://i.ytimg.com/vi_webp/sqjjkGsfBcE/maxresdefault.webp",
+  			"url": "https://www.youtube.com/watch?v=sqjjkGsfBcE",
+  			"UserId": null,
+  			"UploadedBy": null,
+  			"ArtistId": 14,
+  			"PlaylistSong": {
+  				"PlaylistId": 6,
+  				"SongId": 131
+  			},
+  			"Locations": [
+  				{
+  					"id": 263,
+  					"type": "stream",
+  					"path": "http://localhost:3030/download/stream/37",
+  					"SongId": 131
+  				}
+  			],
+  			"Artist": {
+  				"id": 14,
+  				"name": "Grace May - Topic",
+  				"key": "UC9J5UAJBD9zEtCakjUpfB9Q",
+  				"user": "UC9J5UAJBD9zEtCakjUpfB9Q",
+  				"url": "https://www.youtube.com/channel/UC9J5UAJBD9zEtCakjUpfB9Q",
+  				"thumbnail": "https://yt3.ggpht.com/9Rv_xwMSoxyXEkN6DOY_OK71OaWSwt69jxYpTACMTIpRhbHTomdn2UO4fXSHSvbAkvz4oruSWhE=s176-c-k-c0x00ffffff-no-rj"
+  			}
+  		}
+  	],
+  	"songCount": 2
+  }
+
+  ```
+method: GET
+body: {}
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1688663589808.5
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

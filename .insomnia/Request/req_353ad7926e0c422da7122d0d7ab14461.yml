@@ -1,0 +1,49 @@
+_id: req_353ad7926e0c422da7122d0d7ab14461
+type: Request
+parentId: fld_eb309785587341ba98c8f0e1ffa88212
+modified: 1692264414714
+created: 1686318991068
+url: "{{_.host}}/artists/list"
+name: / list
+description: >-
+  # List Artists
+
+
+  This endpoint returns an Array of all Artists in the Database
+
+
+  ```json
+
+  [
+  	{
+  		"id": 1,
+  		"name": "Chino",
+  		"key": "UCaVzcs_eSVXPkmKoNlZuknQ",
+  		"user": "@ChinoNightcore",
+  		"url": "https://www.youtube.com/channel/UCaVzcs_eSVXPkmKoNlZuknQ",
+  		"thumbnail": "https://yt3.ggpht.com/ytc/AGIKgqO4pxwDSriqE0jSsEHGLHAK1jPfK3Bdha3wqw5rDg=s176-c-k-c0x00ffffff-no-rj"
+  	},
+  	{
+  		"id": 2,
+  		"name": "Galaxy",
+  		"key": "UCnqNRTJ493gVFpLOUGBspVw",
+  		"user": "@galaxync",
+  		"url": "https://www.youtube.com/channel/UCnqNRTJ493gVFpLOUGBspVw",
+  		"thumbnail": "https://yt3.ggpht.com/H15_GRbDFGvUIECUM9FpkBelH7fuY2jKR5_J4AnAtysCfkdO_OO4pTZs4xnExBGW9KehDmjBzw=s176-c-k-c0x00ffffff-no-rj"
+  	}
+  ]
+
+  ```
+method: GET
+body: {}
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1686318991068
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

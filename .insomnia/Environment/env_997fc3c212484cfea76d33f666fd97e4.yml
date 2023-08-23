@@ -1,0 +1,14 @@
+_id: env_997fc3c212484cfea76d33f666fd97e4
+type: Environment
+parentId: env_868670c080422eb73b0fd17ae39bb324e0264778
+modified: 1692364389161
+created: 1687108059165
+name: New Environment
+data:
+  host: https://tim.gabrikowski.de/musicserver
+dataPropertyOrder:
+  "&":
+    - host
+color: "#ff0000"
+isPrivate: false
+metaSortKey: 1687108059166

@@ -1,0 +1,137 @@
+_id: req_c952a54d85c14ac5885eb56a4f06200a
+type: Request
+parentId: fld_830644cc820b4520b3fa7c50c524fe17
+modified: 1692799332402
+created: 1688661610226
+url: "{{_.host}}/songs/redownload"
+name: / redownload
+description: >-
+  # Redownload Song
+
+
+  This endpoint works like the `/songs/add-song` endpoint. Its purpose is to redownload a song, that is in the database but not downloaded yet. If the fileserver is not reachable or youtube has a problem, it can happen that a song is created in the database but not downloaded. You can spot those songs by checking the locations Array. Every downloaded song has an Location of type `stream` with the Fileserver-url in it.
+
+
+  ## Example stream location
+
+
+  ```json
+
+  {
+  	"id": 23,
+  	"type": "stream",
+  	"path": "https://tim.gabrikowski.de/fileserver/download/stream/7",
+  	"SongId": 8
+  }
+
+  ```
+
+
+  ## Downloaded Song
+
+
+  ```json
+
+  {
+  	"id": 8,
+  	"title": "Udo Jürgens - Griechischer Wein (Disco 01.02.1975) (VOD)",
+  	"key": "D8hAhqDcVRA",
+  	"seconds": 243,
+  	"thumbnail": "https://i.ytimg.com/vi_webp/D8hAhqDcVRA/maxresdefault.webp",
+  	"url": "https://www.youtube.com/watch?v=D8hAhqDcVRA",
+  	"UserId": null,
+  	"UploadedBy": null,
+  	"ArtistId": 6,
+  	"Artist": {
+  		"id": 6,
+  		"name": "udojuergensVEVO",
+  		"key": "UCjnS3NTENxFqJ3CByeISKlg",
+  		"user": "@udojuergensVEVO",
+  		"url": "https://www.youtube.com/channel/UCjnS3NTENxFqJ3CByeISKlg",
+  		"thumbnail": "https://yt3.ggpht.com/FD8a9rCtIANdrfGrsVMuAmjJpKmc6ncqok71DgKEsLZn-EWRPloHkI4zrkVbPCoMaxswSAyQ=s176-c-k-c0x00ffffff-no-nd-rj"
+  	},
+  	"Locations": [
+  		{
+  			"id": 21,
+  			"type": "youtube",
+  			"path": "https://www.youtube.com/watch?v=D8hAhqDcVRA",
+  			"SongId": 8
+  		},
+  		{
+  			"id": 22,
+  			"type": "youtube_embed",
+  			"path": "https://www.youtube.com/embed/D8hAhqDcVRA",
+  			"SongId": 8
+  		},
+  		{
+  			"id": 23,
+  			"type": "stream",
+  			"path": "https://tim.gabrikowski.de/fileserver/download/stream/7",
+  			"SongId": 8
+  		}
+  	]
+  }
+
+  ```
+
+
+  ## not downloaded Song
+
+
+  ```json
+
+  {
+  	"id": 8,
+  	"title": "Udo Jürgens - Griechischer Wein (Disco 01.02.1975) (VOD)",
+  	"key": "D8hAhqDcVRA",
+  	"seconds": 243,
+  	"thumbnail": "https://i.ytimg.com/vi_webp/D8hAhqDcVRA/maxresdefault.webp",
+  	"url": "https://www.youtube.com/watch?v=D8hAhqDcVRA",
+  	"UserId": null,
+  	"UploadedBy": null,
+  	"ArtistId": 6,
+  	"Artist": {
+  		"id": 6,
+  		"name": "udojuergensVEVO",
+  		"key": "UCjnS3NTENxFqJ3CByeISKlg",
+  		"user": "@udojuergensVEVO",
+  		"url": "https://www.youtube.com/channel/UCjnS3NTENxFqJ3CByeISKlg",
+  		"thumbnail": "https://yt3.ggpht.com/FD8a9rCtIANdrfGrsVMuAmjJpKmc6ncqok71DgKEsLZn-EWRPloHkI4zrkVbPCoMaxswSAyQ=s176-c-k-c0x00ffffff-no-nd-rj"
+  	},
+  	"Locations": [
+  		{
+  			"id": 21,
+  			"type": "youtube",
+  			"path": "https://www.youtube.com/watch?v=D8hAhqDcVRA",
+  			"SongId": 8
+  		},
+  		{
+  			"id": 22,
+  			"type": "youtube_embed",
+  			"path": "https://www.youtube.com/embed/D8hAhqDcVRA",
+  			"SongId": 8
+  		}		
+  	]
+  }
+
+  ```
+method: POST
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"key": "CXU7Xlf8wTI"
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+authentication: {}
+metaSortKey: -1688661610226
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

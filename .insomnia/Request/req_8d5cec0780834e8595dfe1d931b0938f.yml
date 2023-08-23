@@ -1,0 +1,52 @@
+_id: req_8d5cec0780834e8595dfe1d931b0938f
+type: Request
+parentId: fld_06463c82849d41fb907616b94b92998d
+modified: 1692817436392
+created: 1692817157327
+url: "{{_.host}}/playlists/edit"
+name: / edit
+description: >-
+  # Rename
+
+
+  With this endpoint you can rename a Playlist. Supply a new Name and a new Description as well as the key of the playlist.
+
+
+
+  Request:
+
+  ```json
+
+  {
+  	"playlist": "HEvVbatA1Ad5Hdcv",
+  	"title": "SuperPlaylist - edit",
+  	"description": "Super mega fun Playlist - edit"
+  }
+
+  ```
+
+
+  Server will return the Playlist Object with Songs-List.
+method: PUT
+body:
+  mimeType: application/json
+  text: |-
+    {
+    	"playlist": "z5r4R0tNqc5-RCfu",
+    	"title": "Random Playlist",
+    	"description": "Very Random and just for Testing"
+    	
+    }
+parameters: []
+headers:
+  - name: Content-Type
+    value: application/json
+authentication: {}
+metaSortKey: -1688666018163.625
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global

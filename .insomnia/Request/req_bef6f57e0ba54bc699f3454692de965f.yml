@@ -1,0 +1,66 @@
+_id: req_bef6f57e0ba54bc699f3454692de965f
+type: Request
+parentId: fld_eb309785587341ba98c8f0e1ffa88212
+modified: 1692264546305
+created: 1686322670926
+url: "{{_.host}}/artists/id/1"
+name: / id / { id }
+description: >-
+  # Artist Data
+
+
+  This Endpoint returns the data to the requested Artist. Provide the artist ID in the url.
+
+
+  ```json
+
+  {
+  	"id": 1,
+  	"name": "Chino",
+  	"key": "UCaVzcs_eSVXPkmKoNlZuknQ",
+  	"user": "@ChinoNightcore",
+  	"url": "https://www.youtube.com/channel/UCaVzcs_eSVXPkmKoNlZuknQ",
+  	"thumbnail": "https://yt3.ggpht.com/ytc/AGIKgqO4pxwDSriqE0jSsEHGLHAK1jPfK3Bdha3wqw5rDg=s176-c-k-c0x00ffffff-no-rj",
+  	"Songs": [
+  		{
+  			"id": 4,
+  			"title": "Nightcore - I'm Not Her (Lyrics)",
+  			"key": "Lhd5JWfUnLM",
+  			"seconds": 176,
+  			"thumbnail": "https://i.ytimg.com/vi_webp/Lhd5JWfUnLM/maxresdefault.webp",
+  			"url": "https://www.youtube.com/watch?v=Lhd5JWfUnLM",
+  			"UserId": null,
+  			"UploadedBy": null,
+  			"ArtistId": 1
+  		},
+  		{
+  			"id": 10,
+  			"title": "Nightcore - Boy Like You (Lyrics)",
+  			"key": "5J0T7XmAG_g",
+  			"seconds": 161,
+  			"thumbnail": "https://i.ytimg.com/vi_webp/5J0T7XmAG_g/maxresdefault.webp",
+  			"url": "https://www.youtube.com/watch?v=5J0T7XmAG_g",
+  			"UserId": null,
+  			"UploadedBy": null,
+  			"ArtistId": 1
+  		}
+  	]
+  }
+
+  ```
+
+
+  The Object includes the Songs by this Artist (`Songs`), but only in a short version without the Locations
+method: GET
+body: {}
+parameters: []
+headers: []
+authentication: {}
+metaSortKey: -1686318991018
+isPrivate: false
+settingStoreCookies: true
+settingSendCookies: true
+settingDisableRenderRequestBody: false
+settingEncodeUrl: true
+settingRebuildPath: true
+settingFollowRedirects: global
