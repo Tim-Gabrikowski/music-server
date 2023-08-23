@@ -25,7 +25,6 @@ router.get("/one/:key", async (req, res) => {
 			{
 				model: Song,
 				include: [Location, Artist],
-				// order: [[{ model: PlaylistSong }, "time", "ASC"]],
 			},
 		],
 		order: [[col("Songs.PlaylistSong.time"), "ASC"]],
@@ -71,7 +70,30 @@ router.post("/create", async (req, res) => {
 		}
 	}
 
-	await list.reload({ include: [{ model: Song, include: [Artist] }] });
+	await list.reload({
+		include: [{ model: Song, include: [Artist] }],
+		order: [[col("Songs.PlaylistSong.time"), "ASC"]],
+	});
+	res.send(list);
+});
+
+router.put("/edit", async (req, res) => {
+	let listKey = req.body.playlist;
+	let { title, description } = req.body;
+
+	let list = await Playlist.findOne({ where: { key: listKey } });
+
+	if (list == undefined || list == null)
+		return res
+			.status(404)
+			.send({ ok: false, message: "Playlist not found" });
+
+	await list.set("title", title).set("description", description).save();
+
+	await list.reload({
+		include: [{ model: Song, include: [Artist] }],
+		order: [[col("Songs.PlaylistSong.time"), "ASC"]],
+	});
 	res.send(list);
 });
 
@@ -111,6 +133,7 @@ router.put("/add-to-list", async (req, res) => {
 
 	await list.reload({
 		include: [{ model: Song, include: [Location, Artist] }],
+		order: [[col("Songs.PlaylistSong.time"), "ASC"]],
 	});
 
 	res.send(list);
@@ -123,7 +146,7 @@ router.put("/remove-from-list", async (req, res) => {
 	let song = await Song.findOne({ where: { key: songKey } });
 	let playlist = await Playlist.findOne({ where: { key: playlistKey } });
 
-	if (list == undefined || list == null)
+	if (playlist == undefined || playlist == null)
 		return res
 			.status(404)
 			.send({ ok: false, message: "Playlist not found" });
@@ -135,6 +158,7 @@ router.put("/remove-from-list", async (req, res) => {
 
 	await playlist.reload({
 		include: [{ model: Song, include: [Location, Artist] }],
+		order: [[col("Songs.PlaylistSong.time"), "ASC"]],
 	});
 
 	res.send(playlist);
