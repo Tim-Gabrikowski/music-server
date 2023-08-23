@@ -95,11 +95,18 @@ router.put("/add-to-list", async (req, res) => {
 			return res
 				.status(404)
 				.send({ ok: false, message: "Song not found" });
-
-		await PlaylistSong.create({
-			PlaylistId: list.dataValues.id,
-			SongId: song.dataValues.id,
+		let ps = await PlaylistSong.findOne({
+			where: {
+				PlaylistId: list.dataValues.id,
+				SongId: song.dataValues.id,
+			},
 		});
+		if (ps === null || ps == undefined) {
+			await PlaylistSong.create({
+				PlaylistId: list.dataValues.id,
+				SongId: song.dataValues.id,
+			});
+		}
 	}
 
 	await list.reload({
