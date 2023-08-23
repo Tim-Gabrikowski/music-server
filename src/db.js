@@ -160,12 +160,15 @@ Playlist.init(
 		},
 		title: {
 			type: DataTypes.STRING,
+			defaultValue: "",
 		},
 		description: {
 			type: DataTypes.TEXT,
+			defaultValue: "",
 		},
 		thumbnail: {
 			type: DataTypes.STRING,
+			defaultValue: "",
 		},
 	},
 	{
@@ -191,14 +194,25 @@ Playlist.init(
 	}
 );
 
-class PlaylistSong extends Model {}
+export class PlaylistSong extends Model {}
 
 PlaylistSong.init(
-	{},
+	{
+		time: {
+			type: DataTypes.BIGINT,
+			allowNull: false,
+			defaultValue: 0,
+		},
+	},
 	{
 		sequelize: connection,
 		timestamps: false,
 		tableName: "PlaylistSongs",
+		hooks: {
+			beforeValidate: (elem) => {
+				elem.time = Date.now();
+			},
+		},
 	}
 );
 

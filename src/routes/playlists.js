@@ -1,6 +1,7 @@
 import express from "express";
-import { Artist, Song, Location, Playlist } from "../db.js";
+import { Artist, Song, Location, Playlist, PlaylistSong } from "../db.js";
 import * as logger from "../logger.js";
+import { col } from "sequelize";
 import { randomBytes } from "crypto";
 
 let router;
@@ -20,7 +21,14 @@ router.get("/one/:key", async (req, res) => {
 
 	let list = await Playlist.findOne({
 		where: { key: key },
-		include: [{ model: Song, include: [Location, Artist] }],
+		include: [
+			{
+				model: Song,
+				include: [Location, Artist],
+				// order: [[{ model: PlaylistSong }, "time", "ASC"]],
+			},
+		],
+		order: [[col("Songs.PlaylistSong.time"), "ASC"]],
 	});
 
 	if (list == undefined || list == null)
@@ -55,12 +63,15 @@ router.post("/create", async (req, res) => {
 					);
 					thn = true;
 				}
-				await list.addSong(song);
+				await PlaylistSong.create({
+					PlaylistId: list.dataValues.id,
+					SongId: song.dataValues.id,
+				});
 			}
 		}
 	}
 
-	await list.reload({ include: [Song] });
+	await list.reload({ include: [{ model: Song, include: [Artist] }] });
 	res.send(list);
 });
 
@@ -85,7 +96,10 @@ router.put("/add-to-list", async (req, res) => {
 				.status(404)
 				.send({ ok: false, message: "Song not found" });
 
-		await list.addSong(song);
+		await PlaylistSong.create({
+			PlaylistId: list.dataValues.id,
+			SongId: song.dataValues.id,
+		});
 	}
 
 	await list.reload({
