@@ -91,7 +91,7 @@ router.put("/edit", async (req, res) => {
 	await list.set("title", title).set("description", description).save();
 
 	await list.reload({
-		include: [{ model: Song, include: [Artist] }],
+		include: [{ model: Song, include: [Artist, Location] }],
 		order: [[col("Songs.PlaylistSong.time"), "ASC"]],
 	});
 	res.send(list);
