@@ -1,0 +1,13 @@
+=== v1.0.0 ===
+
+The first official version
+
+Changes: Well technically everything but the repository has not changes much.
+
+FIX: Now properly installing NodeJS 20 in Docker not via deprecated script but via new apt repository.
+FIX: New docker build/push scripts
+
+IMAGE: registry.gitlab.com/timgabhh/docker/music-server
+TAG: v1.0.0
+
+=== END ===
