@@ -16,10 +16,12 @@ app.use(express.json());
 import songsRouter from "./routes/songs.js";
 import artistsRouter from "./routes/artists.js";
 import playlistsRouter from "./routes/playlists.js";
+import streamRouter from "./routes/stream.js";
 
 app.use("/songs", songsRouter);
 app.use("/playlists", playlistsRouter);
 app.use("/artists", artistsRouter);
+app.use("/stream", streamRouter);
 app.use("/static", express.static(path.join(__dirname, "static", "assets")));
 
 app.listen(PORT, function () {

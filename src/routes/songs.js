@@ -1,6 +1,5 @@
 import express from "express";
 import { Artist, Song, Location } from "../db.js";
-import { render, renderAllSync, setSync } from "templatesjs";
 import ytdl from "ytdl-core";
 import * as logger from "../logger.js";
 import path from "path";

@@ -1,6 +1,5 @@
 import express from "express";
 import { Artist, Song, Location, Playlist, PlaylistSong } from "../db.js";
-import * as logger from "../logger.js";
 import { col } from "sequelize";
 import { randomBytes } from "crypto";
 
