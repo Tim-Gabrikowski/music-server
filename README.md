@@ -14,7 +14,6 @@ npm install
 3. Declare environment vars. For that create a `.env` file in the root of the project containing the following:
 
 ```env
-HOST=
 PORT=
 DATABASE_NAME=
 DATABASE_USERNAME=
@@ -42,3 +41,5 @@ Install on Linux (apt/snap):
 sudo apt install ffmpeg
 sudo snap install ffmpeg
 ```
+
+## Docker dev
