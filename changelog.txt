@@ -1,4 +1,4 @@
-=== v1.0.0 ===
+=== v1.0.0 (46df7e8) ===
 
 The first official version
 
@@ -7,7 +7,9 @@ Changes: Well technically everything but the repository has not changes much.
 FIX: Now properly installing NodeJS 20 in Docker not via deprecated script but via new apt repository.
 FIX: New docker build/push scripts
 
-IMAGE: registry.gitlab.com/timgabhh/docker/music-server
-TAG: v1.0.0
+=== v1.1.0 (47540cf) ===
+
+NEW: Now you can directly stream audio from youtube without downloading or creating the db entry in prior. For that use the '/stream/:key' endpoint
+FIX: Removed unnecessary Imports 
 
 === END ===
