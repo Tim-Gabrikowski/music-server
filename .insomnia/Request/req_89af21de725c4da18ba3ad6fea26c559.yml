@@ -1,7 +1,7 @@
 _id: req_89af21de725c4da18ba3ad6fea26c559
 type: Request
 parentId: fld_06463c82849d41fb907616b94b92998d
-modified: 1692817164947
+modified: 1699205946654
 created: 1691768858566
 url: "{{_.host}}/playlists/remove-from-list"
 name: / remove-from-list
@@ -37,7 +37,10 @@ parameters: []
 headers:
   - name: Content-Type
     value: application/json
-authentication: {}
+authentication:
+  type: bearer
+  token: "{{_.token}}"
+  prefix: GID
 metaSortKey: -1688665793777.3125
 isPrivate: false
 settingStoreCookies: true

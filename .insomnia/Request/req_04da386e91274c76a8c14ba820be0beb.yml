@@ -1,7 +1,7 @@
 _id: req_04da386e91274c76a8c14ba820be0beb
 type: Request
 parentId: fld_06463c82849d41fb907616b94b92998d
-modified: 1692812754776
+modified: 1699205966938
 created: 1688670498900
 url: "{{_.host}}/playlists/add-to-list"
 name: / add-to-list
@@ -30,14 +30,17 @@ body:
   mimeType: application/json
   text: |-
     {
-    	"songs": ["A0HDitIHMXo"],
-    	"playlist": "C7Kc_GBzhL0NliyG"
+    	"songs": ["jqkPqfOFmbY"],
+    	"playlist": "PH76MyxAWbf8gvMQ"
     }
 parameters: []
 headers:
   - name: Content-Type
     value: application/json
-authentication: {}
+authentication:
+  type: bearer
+  token: "{{_.token}}"
+  prefix: GID
 metaSortKey: -1688670498900
 isPrivate: false
 settingStoreCookies: true

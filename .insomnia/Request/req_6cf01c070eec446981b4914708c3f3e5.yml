@@ -1,9 +1,9 @@
 _id: req_6cf01c070eec446981b4914708c3f3e5
 type: Request
 parentId: fld_06463c82849d41fb907616b94b92998d
-modified: 1692811809736
+modified: 1699205933800
 created: 1688667961635
-url: "{{_.host}}/playlists/one/C7Kc_GBzhL0NliyG"
+url: "{{_.host}}/playlists/one/jqkPqfOFmbY"
 name: / one / { key }
 description: >-
   # Playlist Data
@@ -62,7 +62,10 @@ method: GET
 body: {}
 parameters: []
 headers: []
-authentication: {}
+authentication:
+  type: bearer
+  token: "{{_.token}}"
+  prefix: GID
 metaSortKey: -1688663589808.5
 isPrivate: false
 settingStoreCookies: true

@@ -1,7 +1,7 @@
 _id: req_9bf7544fcdf8425fa6e9b5545d85625b
 type: Request
 parentId: fld_830644cc820b4520b3fa7c50c524fe17
-modified: 1692799164251
+modified: 1699205895874
 created: 1686856902929
 url: "{{_.host}}/songs/add-songs"
 name: / add-songs
@@ -41,7 +41,10 @@ parameters: []
 headers:
   - name: Content-Type
     value: application/json
-authentication: {}
+authentication:
+  type: bearer
+  token: "{{_.token}}"
+  prefix: GID
 metaSortKey: -1686252873495.5
 isPrivate: false
 settingStoreCookies: true

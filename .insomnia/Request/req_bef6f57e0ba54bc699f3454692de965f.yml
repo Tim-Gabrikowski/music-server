@@ -1,7 +1,7 @@
 _id: req_bef6f57e0ba54bc699f3454692de965f
 type: Request
 parentId: fld_eb309785587341ba98c8f0e1ffa88212
-modified: 1692264546305
+modified: 1699205920584
 created: 1686322670926
 url: "{{_.host}}/artists/id/1"
 name: / id / { id }
@@ -55,7 +55,10 @@ method: GET
 body: {}
 parameters: []
 headers: []
-authentication: {}
+authentication:
+  type: bearer
+  token: "{{_.token}}"
+  prefix: GID
 metaSortKey: -1686318991018
 isPrivate: false
 settingStoreCookies: true

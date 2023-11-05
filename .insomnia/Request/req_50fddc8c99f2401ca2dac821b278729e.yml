@@ -1,9 +1,9 @@
 _id: req_50fddc8c99f2401ca2dac821b278729e
 type: Request
 parentId: fld_830644cc820b4520b3fa7c50c524fe17
-modified: 1692725117802
+modified: 1699205881100
 created: 1686252991144
-url: "{{_.host}}/songs/key/henzKOC78nw"
+url: "{{_.host}}/songs/key/jqkPqfOFmbY"
 name: / key / { key }
 description: >-
   # Get Song
@@ -53,7 +53,10 @@ method: GET
 body: {}
 parameters: []
 headers: []
-authentication: {}
+authentication:
+  type: bearer
+  token: "{{_.token}}"
+  prefix: GID
 metaSortKey: -1686252190465
 isPrivate: false
 settingStoreCookies: true

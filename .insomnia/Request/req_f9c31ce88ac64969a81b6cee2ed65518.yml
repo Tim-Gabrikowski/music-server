@@ -1,7 +1,7 @@
 _id: req_f9c31ce88ac64969a81b6cee2ed65518
 type: Request
 parentId: fld_830644cc820b4520b3fa7c50c524fe17
-modified: 1692255201681
+modified: 1699205863009
 created: 1686249940972
 url: "{{ _.host }}/songs/list"
 name: / list
@@ -58,7 +58,10 @@ method: GET
 body: {}
 parameters: []
 headers: []
-authentication: {}
+authentication:
+  type: bearer
+  prefix: GID
+  token: "{{_.token}}"
 metaSortKey: -1686252323911.5
 isPrivate: false
 settingStoreCookies: true
