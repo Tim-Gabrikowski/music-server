@@ -13,7 +13,6 @@ export const inputTypes = {
 export function getInputType(link) {
 	let out = "";
 
-	// video id
 	if (/^.{11}$/.test(link)) {
 		out = inputTypes.VIDEO_ID;
 
