@@ -1,7 +1,8 @@
-import { Sequelize, Model, DataTypes } from "sequelize";
+import { Sequelize, Model, DataTypes, Op } from "sequelize";
 import * as logger from "./logger.js";
 
 import dotenv from "dotenv";
+import songs from "./routes/songs.js";
 dotenv.config();
 
 const connection = new Sequelize(
@@ -132,6 +133,9 @@ User.init(
 		name: {
 			type: DataTypes.STRING,
 		},
+		username: {
+			type: DataTypes.STRING,
+		},
 		thumbnail: {
 			type: DataTypes.STRING,
 		},
@@ -225,10 +229,37 @@ Song.belongsToMany(Playlist, { through: PlaylistSong });
 User.hasMany(Playlist);
 Playlist.belongsTo(User);
 
-User.hasMany(Song);
-Song.belongsTo(User, { foreignKey: "UploadedBy" });
-
 Artist.hasMany(Song);
 Song.belongsTo(Artist);
 
-connection.sync({ alter: true });
+connection.sync({ alter: true }).then(async () => {
+	// FIXME: Do necessary migration of database here
+
+	// fileserver url from stream to fileserver location
+	let songs = await Song.findAll({
+		include: [
+			{
+				model: Location,
+				where: {
+					type: "stream",
+					path: {
+						[Op.like]: process.env.FILESERVER_URL + "%",
+					},
+				},
+			},
+		],
+	});
+
+	for (const song of songs) {
+		// TODO: replace fileserver id with fileserver key once the fileserver is updated (migration)
+		let loc = await Location.build({
+			type: "fileserver",
+			path: song.dataValues.Locations[0].dataValues.path,
+			SongId: song.dataValues.id,
+		}).save();
+		await song.dataValues.Locations[0].update({
+			path: process.env.HOST + "/stream/" + song.dataValues.key,
+		});
+		console.log(loc);
+	}
+});

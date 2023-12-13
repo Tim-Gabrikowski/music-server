@@ -3,6 +3,7 @@ import ytdl from "ytdl-core";
 import * as logger from "../logger.js";
 import { Writable } from "stream";
 import ffmpeg from "fluent-ffmpeg";
+import { Song, Location } from "../db.js";
 
 let router;
 export default router = express.Router();
@@ -10,6 +11,17 @@ export default router = express.Router();
 router.get("/:key", async (req, res) => {
 	// check for key given
 	if (!req.params.key) return res.status(400).send();
+
+	let song = await Song.findOne({
+		where: { key: req.params.key },
+		include: [Location],
+	});
+
+	if (song) {
+		loc = song.locations.find((obj) => obj.type === "fileserver");
+		// TODO: Log listened to users history
+		if (loc !== undefined) return res.redirect(307, loc.path);
+	}
 
 	// create Readable Stream with youtube video
 	let yt_stream = ytdl(req.params.key, {

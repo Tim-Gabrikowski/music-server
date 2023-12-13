@@ -1,12 +1,21 @@
 import { decrypt, verify } from "../tools/decryption.js";
+import { User } from "../db.js";
 
 export async function authMiddleware(req, res, next) {
 	const authHeader = req.headers["authorization"];
-	const token = authHeader && authHeader.split(" ")[1];
+	let token = authHeader && authHeader.split(" ")[1];
+
+	let tokenType;
+	if (token == null) {
+		token = req.query.t;
+		tokenType = "GID";
+	} else {
+		tokenType = authHeader.split(" ")[0];
+	}
+
 	if (token == null) {
 		return res.status(401).send({ token: false, valid: false });
 	}
-	let tokenType = authHeader.split(" ")[0];
 
 	let result = {};
 	switch (tokenType) {
@@ -18,7 +27,17 @@ export async function authMiddleware(req, res, next) {
 			break;
 	}
 	if (result.valid && result.user) {
-		req.user = result.user;
+		let user = await User.findOne({
+			where: { gid_uuid: result.user.uuid },
+		});
+		if (user == null)
+			user = await registerNewGIDUser(
+				result.user.uuid,
+				result.user.name,
+				result.user.username
+			);
+		req.user = user.dataValues;
+		console.log(req.user);
 		req.user.tokenType = tokenType;
 		next();
 	} else {
@@ -47,4 +66,8 @@ function validateGID(token) {
 		valid: verified,
 		user: userdata || null,
 	};
+}
+
+function registerNewGIDUser(uuid, name, username) {
+	return User.build({ name: name, gid_uuid: uuid, username }).save();
 }

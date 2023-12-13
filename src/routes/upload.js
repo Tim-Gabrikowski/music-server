@@ -5,6 +5,7 @@ import { createReadStream } from "fs";
 import dotenv from "dotenv";
 dotenv.config();
 
+// TODO: Change fileserver id to key when fileserver is updated
 export async function uploadFile(path) {
 	try {
 		let form = new FormData();
