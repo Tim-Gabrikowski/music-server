@@ -12,4 +12,9 @@ FIX: New docker build/push scripts
 NEW: Now you can directly stream audio from youtube without downloading or creating the db entry in prior. For that use the '/stream/:key' endpoint
 FIX: Removed unnecessary Imports 
 
+=== v1.2.0 (7436478) ===
+
+NEW: The direct streaming endpoint checks if the song is on the fileserver and redirects to save bandwith to youtube of already downloaded
+NEW: Auth Token can be applied via the 't' url param ('?t=[TOKEN]') to make requests from the browser easier.
+
 === END ===
