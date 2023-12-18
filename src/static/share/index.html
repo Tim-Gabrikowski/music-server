@@ -2,105 +2,92 @@
 <html>
 	<head>
 		<title>Tim Gabrkowski | MusicServer</title>
-		<link
-			rel="stylesheet"
-			href="https://tim-gabrikowski.github.io/TimWizardUI/versions/v1.2.0/style.css"
-			type="text/css"
-		/>
-		<script
-			type="text/javascript"
-			src="https://tim-gabrikowski.github.io/TimWizardUI/versions/v1.2.0/script.js"
-		></script>
-		<link
-			rel="stylesheet"
-			href="https://tim-gabrikowski.github.io/TimWizardUI/plugins/audioplayer/style.css"
-			type="text/css"
-		/>
-		<script
-			type="text/javascript"
-			src="https://tim-gabrikowski.github.io/TimWizardUI/plugins/audioplayer/script.js"
-		></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="../../static/styles.css" type="text/css" />
 	</head>
-	<body></body>
+	<body>
+		<h1 class="mt-10">Music Server</h1>
+		<h2 class="mb-20">Share Page</h2>
+		<div class="column">
+			<!-- Cover Image -->
+			<div class="container" id="cover">
+				<img src="" alt="Coverbild" id="coverImage" />
+			</div>
+			<!-- Song Data -->
+			<div class="container" id="songInfo">
+				<div class="field">
+					<div class="f_key">Title</div>
+					<div class="f_value" id="f_title"></div>
+				</div>
+				<div class="field">
+					<div class="f_key">Artist</div>
+					<div class="f_value" id="f_artist"></div>
+				</div>
+			</div>
+			<!-- Media Player -->
+			<div class="container" id="audioPlayer">
+				<audio id="f_audioplayer"></audio>
+				<div class="field">
+					<div id="f_seektime">0:00</div>
+					<input type="range" class="seekbar" />
+					<div id="f_totaltime">3:46</div>
+				</div>
+				<button id="playButton">Play Song</button>
+				<button id="pauseButton" style="display: none">Pause</button>
+			</div>
+		</div>
+	</body>
 	<script>
+		function elem(id) {
+			return document.getElementById(id);
+		}
+
+		const zeroPad = (num, places) => String(num).padStart(places, "0");
+		function secondsToString(seconds) {
+			var numminutes = Math.floor((((seconds % 31536000) % 86400) % 3600) / 60);
+			var numseconds = (((seconds % 31536000) % 86400) % 3600) % 60;
+			return zeroPad(numminutes, 1) + ":" + zeroPad(numseconds, 2);
+		}
+
+		// get Songdata
 		const songS = "--DATA--"
 			.replace(/&sq;/g, "'")
 			.replace(/&dq;/g, '"')
 			.replace(/&bt;/g, "`");
-
 		const song = JSON.parse(songS);
 		console.log(song);
-
 		let streamUrl = song.Locations.find((l) => l.type == "stream").path;
 
-		const mainPage = page_create({
-			id: "main_page",
-			title: song.title,
-			center: true,
-			style: {
-				width: "500px",
-			},
-			layout: "column",
-			children: [
-				text_create({ text: song.Artist.name }),
-				layout_create({
-					color: "red",
-					border: true,
-					style: { width: "500px", margin: "10px" },
-					children: [
-						image_create({
-							src: song.thumbnail,
-							style: { width: "500px" },
-						}),
-					],
-				}),
-				layout_create({
-					color: "red",
-					border: true,
-					style: {
-						width: "500px",
-						margin: "10px",
-						alignItems: "center",
-						justifyContent: "space-around",
-					},
-					type: "row",
-					children: [
-						image_create({
-							id: "w_youtube",
-							src: "../../static/youtube.svg",
-							alt: "youtube logo",
-							style: {
-								height: "30px",
-								margin: "30px",
-							},
-						}),
-						button_create({
-							label: "Auf Youtube ansehen",
-							color: "red",
-							onclick: () => {
-								let youtubeUrl = song.Locations.find(
-									(l) => l.type == "youtube"
-								).path;
-								window.location = youtubeUrl;
-							},
-						}),
-					],
-				}),
-				audioplayer_create({
-					id: "audioplayer",
-					className: "audioplayer",
-					color: "red",
-					src: streamUrl || "",
-					songData: {
-						title: song.title,
-						artist: song.Artist.name,
-					},
-					onended: () => {
-						console.log("playback ended!");
-					},
-				}),
-			],
+		elem("coverImage").src = song.thumbnail;
+		elem("f_title").innerText = song.title;
+		elem("f_artist").innerText = song.Artist.name;
+		elem("f_totaltime").innerHTML = secondsToString(song.seconds);
+		let audio = elem("f_audioplayer");
+		audio.src = streamUrl;
+		elem("playButton").onclick = () => {
+			audio.play();
+			elem("playButton").style.display = "none";
+			elem("pauseButton").style.display = "block";
+		};
+		elem("pauseButton").onclick = () => {
+			audio.pause();
+			elem("playButton").style.display = "block";
+			elem("pauseButton").style.display = "none";
+		};
+
+		audio.addEventListener("progress", () => {
+			//TODO: Display seek value in bar
+			elem("f_seektime").innerText = secondsToString(
+				Math.floor(audio.currentTime)
+			);
 		});
-		mainPage.show();
+
+		if ("mediaSession" in navigator) {
+			navigator.mediaSession.metadata = new MediaMetadata({
+				title: song.title,
+				artist: song.Artist.name,
+				artwork: [{ src: song.thumbnail }],
+			});
+		}
 	</script>
 </html>
