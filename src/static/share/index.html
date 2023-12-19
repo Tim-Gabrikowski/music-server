@@ -29,7 +29,9 @@
 				<audio id="f_audioplayer"></audio>
 				<div class="field">
 					<div id="f_seektime">0:00</div>
-					<input type="range" class="seekbar" />
+					<div class="seekbar_wrapper" id="f_progress">
+						<input type="range" class="seekbar" id="f_seekbar" />
+					</div>
 					<div id="f_totaltime">3:46</div>
 				</div>
 				<button id="playButton">Play Song</button>
@@ -38,10 +40,10 @@
 		</div>
 	</body>
 	<script>
+		// generic functions
 		function elem(id) {
 			return document.getElementById(id);
 		}
-
 		const zeroPad = (num, places) => String(num).padStart(places, "0");
 		function secondsToString(seconds) {
 			var numminutes = Math.floor((((seconds % 31536000) % 86400) % 3600) / 60);
@@ -58,30 +60,65 @@
 		console.log(song);
 		let streamUrl = song.Locations.find((l) => l.type == "stream").path;
 
+		// seekbar stuff
+		function updateSeekbarDisplay(passed, total) {
+			elem("f_seektime").innerText = secondsToString(Math.floor(passed));
+			elem("f_seekbar").value = passed;
+
+			elem("f_progress").style.setProperty(
+				"--wdt",
+				`${Math.min((passed / total) * 100, 100)}%`
+			);
+		}
+
+		// init view
 		elem("coverImage").src = song.thumbnail;
 		elem("f_title").innerText = song.title;
 		elem("f_artist").innerText = song.Artist.name;
 		elem("f_totaltime").innerHTML = secondsToString(song.seconds);
+		elem("f_seekbar").min = 0;
+		elem("f_seekbar").max = song.seconds;
+		elem("f_seekbar").value = 0;
+		updateSeekbarDisplay(0, song.seconds);
+
+		// init audioplayer
+		let progress = 0;
+		let playing = false;
+
 		let audio = elem("f_audioplayer");
 		audio.src = streamUrl;
+		audio.preload = "auto";
+
+		// init Button Callbacks
 		elem("playButton").onclick = () => {
+			audio.currentTime = progress;
 			audio.play();
+			playing = true;
 			elem("playButton").style.display = "none";
 			elem("pauseButton").style.display = "block";
 		};
 		elem("pauseButton").onclick = () => {
 			audio.pause();
+			progress = audio.currentTime;
+			playing = false;
 			elem("playButton").style.display = "block";
 			elem("pauseButton").style.display = "none";
 		};
-
-		audio.addEventListener("progress", () => {
-			//TODO: Display seek value in bar
-			elem("f_seektime").innerText = secondsToString(
-				Math.floor(audio.currentTime)
-			);
+		// init seekbar seek event
+		elem("f_seekbar").addEventListener("change", () => {
+			progress = elem("f_seekbar").value;
+			audio.currentTime = elem("f_seekbar").value;
+			updateSeekbarDisplay(progress, song.seconds);
 		});
 
+		// update seekbar value
+		setInterval(() => {
+			if (!playing) return;
+			var duration = audio.currentTime;
+			updateSeekbarDisplay(duration, song.seconds);
+		}, 500);
+
+		// init mediaSession
 		if ("mediaSession" in navigator) {
 			navigator.mediaSession.metadata = new MediaMetadata({
 				title: song.title,
