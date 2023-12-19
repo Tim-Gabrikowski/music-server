@@ -11,6 +11,13 @@ import {
 	createSongData,
 } from "../tools/input_converter.js";
 
+function sanitize(s = "") {
+	return s
+		.replace(/\'/g, "&sq;")
+		.replace(/\"/g, "&dq;")
+		.replace(/\`/g, "&bt;");
+}
+
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -41,12 +48,22 @@ router.get("/share/:key", async (req, res) => {
 	let html = fs.readFileSync(
 		path.join(__dirname, "..", "static", "share", "index.html")
 	);
-	let content = JSON.stringify(song)
-		.replace(/\'/g, "&sq;")
-		.replace(/\"/g, "&dq;")
-		.replace(/\`/g, "&bt;");
-
-	let out = html.toString().replace("--DATA--", content);
+	let content = sanitize(JSON.stringify(song));
+	let out = html
+		.toString()
+		.replace("--DATA--", content)
+		.replace(
+			"--OG:TITLE--",
+			`${sanitize(song.title)} by ${sanitize(song.Artist.name)}`
+		)
+		.replace("--OG:IMAGE--", sanitize(song.thumbnail))
+		.replace(
+			"--OG:AUDIO--",
+			song.Locations.find((l) => l.type == "stream").path || ""
+		)
+		.replace("--MUSIC:DURATION--", song.seconds)
+		.replace("--MUSIC:MUSICAN--", sanitize(song.Artist.name))
+		.replace("--OG:URL--", process.env.HOST + "/songs/share/" + song.key);
 	res.send(out);
 });
 
