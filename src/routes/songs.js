@@ -1,5 +1,12 @@
 import express from "express";
-import { Artist, Song, Location, Recommendation } from "../db.js";
+import {
+	Artist,
+	Song,
+	Location,
+	Recommendation,
+	songWithKeyExists,
+	artistWithKeyExists,
+} from "../db.js";
 import ytdl from "ytdl-core";
 import * as logger from "../logger.js";
 import path from "path";
@@ -219,17 +226,6 @@ router.post("/redownload", authMiddleware, async (req, res) => {
 		});
 });
 
-async function songWithKeyExists(key) {
-	let song = await Song.findOne({ where: { key: key } });
-
-	return !(song == undefined || song == null);
-}
-async function artistWithKeyExists(key) {
-	let artist = await Artist.findOne({ where: { key: key } });
-
-	return !(artist == undefined || artist == null);
-}
-
 async function addSong(key, cb) {
 	if (await songWithKeyExists(key)) {
 		return cb(
@@ -303,28 +299,18 @@ async function addSong(key, cb) {
 }
 
 async function updateRecommendations(songKey, recommendations) {
-	console.log(recommendations);
 	let song = await Song.findOne({ where: { key: songKey } });
+
 	for (let i = 0; i < recommendations.length; i++) {
 		const element = recommendations[i];
-		// TODO: check if already related
+		//  check if already related
 		let rec = await Recommendation.findOne({
 			where: {
 				songId: song.id,
 				recommendsKey: element.id,
 			},
 		});
-		if (rec) {
-			console.log(
-				"Song",
-				element.id,
-				"is already related to",
-				songKey,
-				rec
-			);
-			// TODO: if yes, count up
-		} else {
-			// TODO: if not, create relation
+		if (!rec) {
 			let s = await Song.findOne({ where: { key: element.id } });
 			let id = undefined;
 			if (s != undefined) id = s.id;
@@ -334,7 +320,6 @@ async function updateRecommendations(songKey, recommendations) {
 				recommendedSongId: id,
 				count: 1,
 			}).save();
-			console.log(n_rec);
 		}
 	}
 	return await song.reload({

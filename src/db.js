@@ -2,7 +2,6 @@ import { Sequelize, Model, DataTypes, Op } from "sequelize";
 import * as logger from "./logger.js";
 
 import dotenv from "dotenv";
-import songs from "./routes/songs.js";
 dotenv.config();
 
 const connection = new Sequelize(
@@ -230,11 +229,6 @@ Recommendation.init(
 			autoIncrement: true,
 			primaryKey: true,
 		},
-		count: {
-			type: Sequelize.INTEGER,
-			allowNull: false,
-			defaultValue: 1,
-		},
 		recommendsKey: {
 			type: Sequelize.STRING,
 			allowNull: true,
@@ -274,34 +268,52 @@ Playlist.belongsTo(User);
 Artist.hasMany(Song);
 Song.belongsTo(Artist);
 
-connection.sync({ alter: true }).then(async () => {
-	// FIXME: Do necessary migration of database here
+export async function initDB() {
+	let ok = true;
+	try {
+		await connection.sync({ alter: true });
+		// FIXME: Do necessary migration of database here
 
-	// fileserver url from stream to fileserver location
-	let songs = await Song.findAll({
-		include: [
-			{
-				model: Location,
-				where: {
-					type: "stream",
-					path: {
-						[Op.like]: process.env.FILESERVER_URL + "%",
+		// fileserver url from stream to fileserver location
+		let songs = await Song.findAll({
+			include: [
+				{
+					model: Location,
+					where: {
+						type: "stream",
+						path: {
+							[Op.like]: process.env.FILESERVER_URL + "%",
+						},
 					},
 				},
-			},
-		],
-	});
-
-	for (const song of songs) {
-		// TODO: replace fileserver id with fileserver key once the fileserver is updated (migration)
-		let loc = await Location.build({
-			type: "fileserver",
-			path: song.dataValues.Locations[0].dataValues.path,
-			SongId: song.dataValues.id,
-		}).save();
-		await song.dataValues.Locations[0].update({
-			path: process.env.HOST + "/stream/" + song.dataValues.key,
+			],
 		});
-		console.log(loc);
+
+		for (const song of songs) {
+			// TODO: replace fileserver id with fileserver key once the fileserver is updated (migration)
+			let loc = await Location.build({
+				type: "fileserver",
+				path: song.dataValues.Locations[0].dataValues.path,
+				SongId: song.dataValues.id,
+			}).save();
+			await song.dataValues.Locations[0].update({
+				path: process.env.HOST + "/stream/" + song.dataValues.key,
+			});
+			console.log(loc);
+		}
+	} catch (err) {
+		return err;
 	}
-});
+	return ok;
+}
+
+export async function songWithKeyExists(key) {
+	let song = await Song.findOne({ where: { key: key } });
+
+	return !(song == undefined || song == null);
+}
+export async function artistWithKeyExists(key) {
+	let artist = await Artist.findOne({ where: { key: key } });
+
+	return !(artist == undefined || artist == null);
+}
