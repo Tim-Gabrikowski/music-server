@@ -2,20 +2,21 @@ import express from "express";
 import { Artist, Song, Location, Playlist, PlaylistSong } from "../db.js";
 import { col } from "sequelize";
 import { randomBytes } from "crypto";
+import { authMiddleware } from "../middlewares/auth.js";
 
 let router;
 export default router = express.Router();
 
-router.get("/", (req, res) => {
+router.get("/", authMiddleware, (req, res) => {
 	res.send({ ok: true, route: "/playlists", method: "GET" });
 });
 
-router.get("/list", async (req, res) => {
+router.get("/list", authMiddleware, async (req, res) => {
 	let lists = await Playlist.findAll();
 	res.send(lists);
 });
 
-router.get("/one/:key", async (req, res) => {
+router.get("/one/:key", authMiddleware, async (req, res) => {
 	let { key } = req.params;
 
 	let list = await Playlist.findOne({
@@ -37,7 +38,7 @@ router.get("/one/:key", async (req, res) => {
 	res.send(list);
 });
 
-router.post("/create", async (req, res) => {
+router.post("/create", authMiddleware, async (req, res) => {
 	let key = randomBytes(12).toString("base64url");
 	let list = await Playlist.build({
 		key: key,
@@ -76,7 +77,7 @@ router.post("/create", async (req, res) => {
 	res.send(list);
 });
 
-router.put("/edit", async (req, res) => {
+router.put("/edit", authMiddleware, async (req, res) => {
 	let listKey = req.body.playlist;
 	let { title, description } = req.body;
 
@@ -96,7 +97,7 @@ router.put("/edit", async (req, res) => {
 	res.send(list);
 });
 
-router.put("/add-to-list", async (req, res) => {
+router.put("/add-to-list", authMiddleware, async (req, res) => {
 	let keys = req.body.songs;
 	let listKey = req.body.playlist;
 
@@ -138,7 +139,7 @@ router.put("/add-to-list", async (req, res) => {
 	res.send(list);
 });
 
-router.put("/remove-from-list", async (req, res) => {
+router.put("/remove-from-list", authMiddleware, async (req, res) => {
 	let songKey = req.body.song;
 	let playlistKey = req.body.playlist;
 

@@ -152,6 +152,7 @@ export async function createSongData(ytKey) {
 			url: data.videoDetails.author.channel_url,
 			thumbnail: getThumbnail(data.videoDetails.author.thumbnails).url,
 		},
+		recommendedSongs: data.related_videos,
 	};
 
 	return sData;

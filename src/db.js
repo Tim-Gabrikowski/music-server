@@ -220,6 +220,35 @@ PlaylistSong.init(
 	}
 );
 
+export class Recommendation extends Model {}
+
+Recommendation.init(
+	{
+		id: {
+			type: Sequelize.INTEGER,
+			allowNull: false,
+			autoIncrement: true,
+			primaryKey: true,
+		},
+	},
+	{
+		sequelize: connection,
+		timestamps: false,
+		tableName: "Recommendations",
+	}
+);
+
+Song.belongsToMany(Song, {
+	through: Recommendation,
+	as: "recommendedSongs",
+	foreignKey: "songKey",
+});
+Song.belongsToMany(Song, {
+	through: Recommendation,
+	as: "recommendedSongs2",
+	foreignKey: "recommendedSongKey",
+});
+
 Song.hasMany(Location, { onDelete: "cascade" });
 Location.belongsTo(Song);
 

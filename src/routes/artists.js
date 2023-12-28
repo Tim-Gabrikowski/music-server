@@ -1,15 +1,16 @@
 import express from "express";
 import { Artist, Song } from "../db.js";
+import { authMiddleware } from "../middlewares/auth.js";
 
 let router;
 export default router = express.Router();
 
-router.get("/list", async (req, res) => {
+router.get("/list", authMiddleware, async (req, res) => {
 	let artists = await Artist.findAll();
 	res.send(artists);
 });
 
-router.get("/id/:id", async (req, res) => {
+router.get("/id/:id", authMiddleware, async (req, res) => {
 	let { id } = req.params;
 
 	let artist = await Artist.findByPk(id, { include: [Song] });
@@ -19,7 +20,7 @@ router.get("/id/:id", async (req, res) => {
 	res.send(artist);
 });
 
-router.get("/key/:key", async (req, res) => {
+router.get("/key/:key", authMiddleware, async (req, res) => {
 	let { key } = req.params;
 
 	let artist = await Artist.findOne({

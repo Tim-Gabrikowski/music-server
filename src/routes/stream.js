@@ -21,6 +21,8 @@ router.get("/:key", async (req, res) => {
 		loc = song.locations.find((obj) => obj.type === "fileserver");
 		// TODO: Log listened to users history
 		if (loc !== undefined) return res.redirect(307, loc.path);
+	} else {
+		// TODO: Take Song into lib
 	}
 
 	// create Readable Stream with youtube video

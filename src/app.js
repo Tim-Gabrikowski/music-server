@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import * as logger from "./logger.js";
 import * as path from "path";
-import { authMiddleware } from "./middlewares/auth.js";
 import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -17,7 +16,6 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(authMiddleware);
 
 import songsRouter from "./routes/songs.js";
 import artistsRouter from "./routes/artists.js";

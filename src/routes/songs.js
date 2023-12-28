@@ -11,6 +11,8 @@ import {
 	createSongData,
 } from "../tools/input_converter.js";
 
+import { authMiddleware } from "../middlewares/auth.js";
+
 function sanitize(s = "") {
 	return s
 		.replace(/\'/g, "&sq;")
@@ -30,7 +32,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 let router;
 export default router = express.Router();
 
-router.get("/", (req, res) => {
+router.get("/", authMiddleware, (req, res) => {
 	res.send({ ok: true, route: "/songs", method: "GET" });
 });
 
@@ -67,12 +69,12 @@ router.get("/share/:key", async (req, res) => {
 	res.send(out);
 });
 
-router.get("/list", async (req, res) => {
+router.get("/list", authMiddleware, async (req, res) => {
 	let songs = await Song.findAll({ include: [Artist, Location] });
 	res.send(songs);
 });
 
-router.get("/id/:id", async (req, res) => {
+router.get("/id/:id", authMiddleware, async (req, res) => {
 	let { id } = req.params;
 
 	let song = await Song.findByPk(id, { include: [Artist, Location] });
@@ -83,7 +85,7 @@ router.get("/id/:id", async (req, res) => {
 	res.send(song);
 });
 
-router.get("/key/:key", async (req, res) => {
+router.get("/key/:key", authMiddleware, async (req, res) => {
 	let { key } = req.params;
 
 	let song = await Song.findOne({
@@ -97,13 +99,13 @@ router.get("/key/:key", async (req, res) => {
 	res.send(song);
 });
 
-router.post("/add-song", async (req, res) => {
+router.post("/add-song", authMiddleware, async (req, res) => {
 	let { key } = req.body;
 
 	await addSong(key, (result) => res.send(result));
 });
 
-router.post("/add-songs", async (req, res) => {
+router.post("/add-songs", authMiddleware, async (req, res) => {
 	let { keys } = req.body;
 
 	let results = [];
@@ -117,7 +119,7 @@ router.post("/add-songs", async (req, res) => {
 	}
 });
 
-router.get("/get-data", async (req, res) => {
+router.get("/get-data", authMiddleware, async (req, res) => {
 	const { input } = req.query;
 
 	let type = await getInputType(input);
@@ -126,7 +128,7 @@ router.get("/get-data", async (req, res) => {
 	res.send({ type: type, data: data });
 });
 
-router.post("/redownload", async (req, res) => {
+router.post("/redownload", authMiddleware, async (req, res) => {
 	const { key } = req.body;
 	console.log(req.body);
 	if (!(await songWithKeyExists(key))) return res.redirect(307, "./add-song");
@@ -241,6 +243,8 @@ async function addSong(key, cb) {
 	});
 
 	await artist.addSong(song);
+
+	// TODO: save recommendations
 
 	// download file
 	let tmpFilePath = path.join(__dirname, `../../music/${sData.key}.mp3`);
