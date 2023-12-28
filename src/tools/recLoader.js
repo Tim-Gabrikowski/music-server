@@ -1,15 +1,11 @@
-import {
-	Recommendation,
-	Song,
-	Artist,
-	songWithKeyExists,
-	artistWithKeyExists,
-} from "../db.js";
+import { Recommendation, Song, Artist } from "../db.js";
 import * as logger from "../logger.js";
 import { createSongData } from "./input_converter.js";
-
+const cron = await import("node-cron");
 import dotenv from "dotenv";
 dotenv.config();
+
+const IMPORT_CRON = process.env.DYNAMIC_IMPORT_CRON || "*/5 * * * *";
 
 export async function startRecommedationImporting() {
 	logger.info("RECIMP", "Starting Recommendation Importer");
@@ -19,6 +15,21 @@ export async function startRecommedationImporting() {
 		"All left over Recommendations are now imported properly"
 	);
 	// TODO: add sceduler that imports new Recommendations in a certain period of time
+	logger.info(
+		"RECIMP",
+		"Scedule new Recommendation imports. CRON: " + IMPORT_CRON
+	);
+	cron.schedule(IMPORT_CRON, async () => {
+		logger.info(
+			"RECIMP",
+			"Start sceduled automatic import of recommendations"
+		);
+		await importRecommendations();
+		logger.info(
+			"RECIMP",
+			"All left over Recommendations are now imported properly"
+		);
+	});
 }
 
 async function importRecommendations() {
