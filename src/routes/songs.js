@@ -1,5 +1,5 @@
 import express from "express";
-import { Artist, Song, Location } from "../db.js";
+import { Artist, Song, Location, Recommendation } from "../db.js";
 import ytdl from "ytdl-core";
 import * as logger from "../logger.js";
 import path from "path";
@@ -77,7 +77,13 @@ router.get("/list", authMiddleware, async (req, res) => {
 router.get("/id/:id", authMiddleware, async (req, res) => {
 	let { id } = req.params;
 
-	let song = await Song.findByPk(id, { include: [Artist, Location] });
+	let song = await Song.findByPk(id, {
+		include: [
+			Artist,
+			Location,
+			{ model: Song, as: "recommendedSongs", include: [Artist] },
+		],
+	});
 
 	if (song == undefined || song == null)
 		return res.status(404).send({ ok: false, message: "Song not found" });
@@ -90,12 +96,26 @@ router.get("/key/:key", authMiddleware, async (req, res) => {
 
 	let song = await Song.findOne({
 		where: { key: key },
-		include: [Artist, Location],
+		include: [
+			Artist,
+			Location,
+			{ model: Song, as: "recommendedSongs", include: [Artist] },
+		],
 	});
 
 	if (song == undefined || song == null)
 		return res.status(404).send({ ok: false, message: "Song not found" });
 
+	res.send(song);
+});
+
+router.put("/reload-recs", authMiddleware, async (req, res) => {
+	let { key } = req.body;
+
+	if (key == undefined) return res.status(400).send();
+
+	let data = await createSongData(key);
+	let song = await updateRecommendations(key, data.recommendedSongs);
 	res.send(song);
 });
 
@@ -244,7 +264,7 @@ async function addSong(key, cb) {
 
 	await artist.addSong(song);
 
-	// TODO: save recommendations
+	song = await updateRecommendations(song.key, sData.recommendedSongs);
 
 	// download file
 	let tmpFilePath = path.join(__dirname, `../../music/${sData.key}.mp3`);
@@ -280,4 +300,48 @@ async function addSong(key, cb) {
 			cb(song);
 			console.log(err);
 		});
+}
+
+async function updateRecommendations(songKey, recommendations) {
+	console.log(recommendations);
+	let song = await Song.findOne({ where: { key: songKey } });
+	for (let i = 0; i < recommendations.length; i++) {
+		const element = recommendations[i];
+		// TODO: check if already related
+		let rec = await Recommendation.findOne({
+			where: {
+				songId: song.id,
+				recommendsKey: element.id,
+			},
+		});
+		if (rec) {
+			console.log(
+				"Song",
+				element.id,
+				"is already related to",
+				songKey,
+				rec
+			);
+			// TODO: if yes, count up
+		} else {
+			// TODO: if not, create relation
+			let s = await Song.findOne({ where: { key: element.id } });
+			let id = undefined;
+			if (s != undefined) id = s.id;
+			let n_rec = await Recommendation.build({
+				songId: song.id,
+				recommendsKey: element.id,
+				recommendedSongId: id,
+				count: 1,
+			}).save();
+			console.log(n_rec);
+		}
+	}
+	return await song.reload({
+		include: [
+			Artist,
+			Location,
+			{ model: Song, as: "recommendedSongs", include: [Artist] },
+		],
+	});
 }

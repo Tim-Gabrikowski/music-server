@@ -230,6 +230,15 @@ Recommendation.init(
 			autoIncrement: true,
 			primaryKey: true,
 		},
+		count: {
+			type: Sequelize.INTEGER,
+			allowNull: false,
+			defaultValue: 1,
+		},
+		recommendsKey: {
+			type: Sequelize.STRING,
+			allowNull: true,
+		},
 	},
 	{
 		sequelize: connection,
@@ -241,12 +250,16 @@ Recommendation.init(
 Song.belongsToMany(Song, {
 	through: Recommendation,
 	as: "recommendedSongs",
-	foreignKey: "songKey",
+	foreignKey: "songId", // This is the foreign key in the Recommendation table
+	otherKey: "recommendedSongId", // This is the foreign key for the recommended song
 });
+
+// Optional: If you want a bidirectional association
 Song.belongsToMany(Song, {
 	through: Recommendation,
-	as: "recommendedSongs2",
-	foreignKey: "recommendedSongKey",
+	as: "recommendingSongs",
+	foreignKey: "recommendedSongId",
+	otherKey: "songId",
 });
 
 Song.hasMany(Location, { onDelete: "cascade" });
