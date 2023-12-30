@@ -8,25 +8,25 @@ dotenv.config();
 const IMPORT_CRON = process.env.DYNAMIC_IMPORT_CRON || "*/5 * * * *";
 
 export async function startRecommedationImporting() {
-	logger.info("RECIMP", "Starting Recommendation Importer");
+	logger.info(logger.NAMES.recImp, "Starting Recommendation Importer");
 	await importRecommendations();
 	logger.info(
-		"RECIMP",
+		logger.NAMES.recImp,
 		"All left over Recommendations are now imported properly"
 	);
 	// TODO: add sceduler that imports new Recommendations in a certain period of time
 	logger.info(
-		"RECIMP",
+		logger.NAMES.recImp,
 		"Scedule new Recommendation imports. CRON: " + IMPORT_CRON
 	);
 	cron.schedule(IMPORT_CRON, async () => {
 		logger.info(
-			"RECIMP",
+			logger.NAMES.recImp,
 			"Start sceduled automatic import of recommendations"
 		);
 		await importRecommendations();
 		logger.info(
-			"RECIMP",
+			logger.NAMES.recImp,
 			"All left over Recommendations are now imported properly"
 		);
 	});
@@ -36,7 +36,7 @@ async function importRecommendations() {
 	// Get list of Recommendations which songs are not imported yet.
 	let recsToCheck = await getListOfRecommendationsToImport();
 	logger.info(
-		"RECIMP",
+		logger.NAMES.recImp,
 		recsToCheck.length + " Recommendations need to be checked"
 	);
 	// Get a list of all the songs to reduce duplicates

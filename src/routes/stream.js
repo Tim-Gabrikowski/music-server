@@ -32,7 +32,7 @@ router.get("/:key", async (req, res) => {
 
 	// End uplink on error
 	yt_stream.on("error", (err) => {
-		logger.error("STREAM", "YTDL: " + err);
+		logger.error(logger.NAMES.dirStream, "YTDL: " + err);
 		res.end();
 	});
 
@@ -43,27 +43,35 @@ router.get("/:key", async (req, res) => {
 	// create Writable Stream as output for ffmpeg
 	const f_out_stream = new Writable();
 
-	// extract the audio from the yt_stream to the output stream
-	ffmpeg(yt_stream)
-		.output(f_out_stream)
-		.outputFormat("mp3")
-		.on("end", () => {
-			f_out_stream.close();
-		})
-		.run();
+	try {
+		// extract the audio from the yt_stream to the output stream
+		ffmpeg(yt_stream)
+			.output(f_out_stream)
+			.outputFormat("mp3")
+			.on("end", () => {
+				f_out_stream.end();
+			})
+			.run();
 
-	// End uplink on error
-	f_out_stream.on("error", (err) => {
-		logger.error("STREAM", "FFMPEG: " + err);
-		res.end();
-	});
+		// End uplink on error
+		f_out_stream.on("error", (err) => {
+			logger.error(logger.NAMES.dirStream, "FFMPEG: " + err);
+			res.end();
+		});
 
-	// Send each chunk from FFMPEG via the Writestream to the response stream
-	f_out_stream._write = (c, e, next) => {
-		res.write(c);
-		next();
-	};
-	f_out_stream._final = (err) => {
-		res.send();
-	};
+		// Send each chunk from FFMPEG via the Writestream to the response stream
+		f_out_stream._write = (c, e, next) => {
+			res.write(c);
+			next();
+		};
+		f_out_stream._final = (err) => {
+			res.send();
+		};
+	} catch (err) {
+		logger.error(
+			logger.NAMES.dirStream,
+			"Direct Stream resulted in this error: " + err
+		);
+		res.status(500).send({ ok: false, err: "Server fucked up!" });
+	}
 });

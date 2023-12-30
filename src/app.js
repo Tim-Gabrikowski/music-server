@@ -9,11 +9,11 @@ import { initDB } from "./db.js";
 import { startRecommedationImporting } from "./tools/recLoader.js";
 
 process.on("uncaughtException", (error) => {
-	logger.critical("MAIN", error);
+	logger.critical(logger.NAMES.main, error);
 });
 
 let db = await initDB();
-if (db !== true) logger.critical("MAIN", "Init DB failed: " + db);
+if (db !== true) logger.critical(logger.NAMES.main, "Init DB failed: " + db);
 
 const PORT = process.env.PORT || 3010;
 
@@ -34,7 +34,7 @@ app.use("/stream", streamRouter);
 app.use("/static", express.static(path.join(__dirname, "static", "assets")));
 
 app.listen(PORT, function () {
-	logger.info("MAIN", "Application Listening on Port " + PORT);
+	logger.info(logger.NAMES.main, "Application Listening on Port " + PORT);
 });
 
 // Runtime scedulers and tasks

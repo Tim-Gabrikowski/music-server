@@ -24,7 +24,7 @@ const connection = new Sequelize(
 
 function dbLogger() {
 	return (message) => {
-		logger.debug("DATABASE", message);
+		logger.debug(logger.NAMES.db, message);
 	};
 }
 

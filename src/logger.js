@@ -81,3 +81,12 @@ function writeToFile(logMessage) {
 	}
 	stream.write(logMessage + "\n");
 }
+
+export const NAMES = {
+	main: "MAIN",
+	db: "DTBS",
+	dirStream: "DSTR",
+	dwnloader: "DWNL",
+	ytdl: "YTDL",
+	recImp: "RIMP",
+};

@@ -214,13 +214,13 @@ router.post("/redownload", authMiddleware, async (req, res) => {
 				res.send(song);
 			} else {
 				// reload all the associations and songdata and send to client
-				logger.error("REDOWNLOAD", inspect(result));
+				logger.error(logger.NAMES.dwnloader, inspect(result));
 				await song.reload({ include: [Artist, Location] });
 				res.status(500).send(song);
 			}
 		})
 		.on("error", async (err) => {
-			logger.error("REDOWNLOAD", err);
+			logger.error(logger.NAMES.dwnloader, err);
 			await song.reload({ include: [Artist, Location] });
 			res.status(500).send(song);
 		});
@@ -285,13 +285,13 @@ async function addSong(key, cb) {
 				cb(song);
 			} else {
 				// reload all the associations and songdata and send to client
-				logger.error("REDOWNLOAD", inspect(result));
+				logger.error(logger.NAMES.dwnloader, inspect(result));
 				await song.reload({ include: [Artist, Location] });
 				cb(song);
 			}
 		})
 		.on("error", async (err) => {
-			logger.error("REDOWNLOAD", err);
+			logger.error(logger.NAMES.dwnloader, err);
 			await song.reload({ include: [Artist, Location] });
 			cb(song);
 			console.log(err);
