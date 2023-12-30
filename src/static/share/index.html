@@ -19,12 +19,25 @@
 		<meta name="og:music:musican" content="--MUSIC:MUSICAN--" />
 	</head>
 	<body>
+		<template id="song_card_template">
+			<div class="songCardSmall">
+				<img
+					src="https://i.ytimg.com/vi_webp/IEIbS9_9JOY/maxresdefault.webp"
+					alt="Cover"
+					class="cover"
+				/>
+				<div class="values">
+					<div class="f_value title">All falls down bla</div>
+					<div class="f_key artist">avex</div>
+				</div>
+			</div>
+		</template>
 		<h1 class="mt-10">Music Server</h1>
 		<h2 class="mb-20">Share Page</h2>
 		<div class="column">
 			<!-- Cover Image -->
 			<div class="container" id="cover">
-				<img src="" alt="Coverbild" id="coverImage" />
+				<img alt="Coverbild" id="coverImage" />
 			</div>
 			<!-- Song Data -->
 			<div class="container" id="songInfo">
@@ -50,6 +63,10 @@
 				<button id="playButton">Play Song</button>
 				<button id="pauseButton" style="display: none">Pause</button>
 			</div>
+			<!-- Rcommended Songs -->
+			<div class="container" id="rec_cont">
+				<h3>Songs related to this one</h3>
+			</div>
 		</div>
 	</body>
 	<script>
@@ -71,7 +88,9 @@
 			.replace(/&bt;/g, "`");
 		const song = JSON.parse(songS);
 		console.log(song);
-		let streamUrl = song.Locations.find((l) => l.type == "stream").path;
+		let streamUrl = (
+			song.Locations.find((l) => l.type == "stream") || { path: "" }
+		).path;
 
 		// seekbar stuff
 		function updateSeekbarDisplay(passed, total) {
@@ -93,6 +112,27 @@
 		elem("f_seekbar").max = song.seconds;
 		elem("f_seekbar").value = 0;
 		updateSeekbarDisplay(0, song.seconds);
+
+		let rec_cont = elem("rec_cont");
+
+		song.recommendedSongs.forEach((rs) => {
+			let tmpl = elem("song_card_template");
+			let rec = document.importNode(tmpl.content, true);
+
+			rec.querySelector(".cover").src = rs.thumbnail;
+			rec.querySelector(".values .title").innerText = rs.title;
+			rec.querySelector(".values .artist").innerText = rs.Artist.name;
+
+			rec.querySelector(".songCardSmall").addEventListener("click", () => {
+				console.log("c");
+				let href = window.location.href;
+				let parts = href.split("/");
+				parts[parts.length - 1] = rs.key;
+				window.location.href = parts.join("/");
+			});
+
+			rec_cont.appendChild(rec);
+		});
 
 		// init audioplayer
 		let progress = 0;

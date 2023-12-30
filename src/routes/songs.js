@@ -17,7 +17,7 @@ import {
 	getInputData,
 	createSongData,
 } from "../tools/input_converter.js";
-import { updateRecommendations } from "../services/recLoader.js";
+import { UPDATE_QUEUE } from "../services/recLoader.js";
 
 import { authMiddleware } from "../middlewares/auth.js";
 
@@ -73,7 +73,8 @@ router.get("/share/:key", async (req, res) => {
 		.replace("--OG:IMAGE--", sanitize(song.thumbnail))
 		.replace(
 			"--OG:AUDIO--",
-			song.Locations.find((l) => l.type == "stream").path || ""
+			(song.Locations.find((l) => l.type == "stream") || { path: "" })
+				.path
 		)
 		.replace("--MUSIC:DURATION--", song.seconds)
 		.replace("--MUSIC:MUSICAN--", sanitize(song.Artist.name))
@@ -129,7 +130,15 @@ router.put("/reload-recs", authMiddleware, async (req, res) => {
 	if (key == undefined) return res.status(400).send();
 
 	let data = await createSongData(key);
-	let song = await updateRecommendations(key, data.recommendedSongs);
+	UPDATE_QUEUE.add(data);
+	let song = await Song.findOne({
+		where: { key: key },
+		include: [
+			Artist,
+			Location,
+			{ model: Song, as: "recommendedSongs", include: [Artist] },
+		],
+	});
 	res.send(song);
 });
 
@@ -172,6 +181,9 @@ router.post("/redownload", authMiddleware, async (req, res) => {
 		include: [Artist, Location],
 	});
 
+	let sData = await createSongData(song.key);
+	UPDATE_QUEUE.add(sData);
+
 	// download file
 	let tmpFilePath = path.join(__dirname, `../../music/${key}.mp3`);
 	let yt_stream = ytdl(key, {
@@ -183,12 +195,12 @@ router.post("/redownload", authMiddleware, async (req, res) => {
 			let result = await uploadFile(tmpFilePath);
 			if (result.ok) {
 				let loc = await Location.findOne({
-					where: { SongId: song.id, type: "stream" },
+					where: { SongId: song.id, type: "fileserver" },
 				});
 
 				if (loc == undefined || loc == null) {
 					await song.createLocation({
-						type: "stream",
+						type: "fileserver",
 						path:
 							process.env.FILESERVER_URL +
 								"/download/stream/" +
@@ -217,14 +229,22 @@ router.post("/redownload", authMiddleware, async (req, res) => {
 
 				fs.rmSync(tmpFilePath);
 				// reload all the associations and songdata and send to client
-				await song.reload({ include: [Artist, Location] });
-				res.send(song);
 			} else {
 				// reload all the associations and songdata and send to client
 				logger.error(logger.NAMES.dwnloader, inspect(result));
-				await song.reload({ include: [Artist, Location] });
-				res.status(500).send(song);
 			}
+
+			let loc_s = await Location.findOne({
+				where: { SongId: song.id, type: "stream" },
+			});
+			if (!loc_s) {
+				await song.createLocation({
+					type: "stream",
+					path: process.env.HOST + "/stream/" + song.dataValues.key,
+				});
+			}
+			await song.reload({ include: [Artist, Location] });
+			res.send(song);
 		})
 		.on("error", async (err) => {
 			logger.error(logger.NAMES.dwnloader, err);
@@ -244,7 +264,6 @@ async function addSong(key, cb) {
 	}
 
 	let sData = await createSongData(key);
-	console.log(sData);
 
 	let artist;
 	if (await artistWithKeyExists(sData.artist.key)) {
@@ -267,7 +286,7 @@ async function addSong(key, cb) {
 
 	await artist.addSong(song);
 
-	song = await updateRecommendations(song.key, sData.recommendedSongs);
+	UPDATE_QUEUE.add(sData);
 
 	// download file
 	let tmpFilePath = path.join(__dirname, `../../music/${sData.key}.mp3`);
@@ -280,7 +299,7 @@ async function addSong(key, cb) {
 			let result = await uploadFile(tmpFilePath);
 			if (result.ok) {
 				await song.createLocation({
-					type: "stream",
+					type: "fileserver",
 					path:
 						process.env.FILESERVER_URL +
 							"/download/stream/" +
@@ -288,14 +307,16 @@ async function addSong(key, cb) {
 				});
 				fs.rmSync(tmpFilePath);
 				// reload all the associations and songdata and send to client
-				await song.reload({ include: [Artist, Location] });
-				cb(song);
 			} else {
 				// reload all the associations and songdata and send to client
 				logger.error(logger.NAMES.dwnloader, inspect(result));
-				await song.reload({ include: [Artist, Location] });
-				cb(song);
 			}
+			await song.createLocation({
+				type: "stream",
+				path: process.env.HOST + "/stream/" + song.dataValues.key,
+			});
+			await song.reload({ include: [Artist, Location] });
+			cb(song);
 		})
 		.on("error", async (err) => {
 			logger.error(logger.NAMES.dwnloader, err);

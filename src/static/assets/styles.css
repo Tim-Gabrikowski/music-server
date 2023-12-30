@@ -30,7 +30,8 @@ body {
 }
 
 h1,
-h2 {
+h2,
+h3 {
 	margin: 0;
 }
 .mt-10 {
@@ -181,4 +182,41 @@ input[type="range"]::-moz-range-thumb {
 	position: relative;
 	top: -20px;
 	left: 0;
+}
+
+/* Song Recommendations */
+.songCardSmall {
+	flex-wrap: nowrap;
+	height: 3rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-start;
+	border: 1px solid white;
+	border-radius: 10px;
+	overflow: hidden;
+	padding: 5px;
+	margin: 5px;
+	cursor: pointer;
+}
+.songCardSmall .cover {
+	height: 100%;
+	width: 3rem;
+	border-radius: 5px;
+	object-fit: cover;
+}
+.songCardSmall .values {
+	margin-left: 5px;
+	height: 100%;
+	width: calc(100% - 3rem - 5px);
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: flex-start;
+}
+.songCardSmall .values .f_value {
+	text-align: left;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: 100%;
 }

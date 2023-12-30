@@ -1,9 +1,12 @@
-import { Recommendation, Song, Artist } from "../db.js";
+import { Recommendation, Song, Artist, Location } from "../db.js";
 import * as logger from "../logger.js";
 import { createSongData } from "../tools/input_converter.js";
 const cron = await import("node-cron");
 import dotenv from "dotenv";
+import { Queue } from "../tools/queue.js";
 dotenv.config();
+
+export const UPDATE_QUEUE = new Queue();
 
 const IMPORT_CRON = process.env.DYNAMIC_IMPORT_CRON || "*/5 * * * *";
 
@@ -24,6 +27,14 @@ export async function startRecommedationImporting() {
 			logger.NAMES.recImp,
 			"Start sceduled automatic import of recommendations"
 		);
+		logger.info(
+			logger.NAMES.recImp,
+			UPDATE_QUEUE.size + " new Songs in queue that want recommendations"
+		);
+		while (!UPDATE_QUEUE.isEmpty()) {
+			let sData = UPDATE_QUEUE.next();
+			await updateRecommendations(sData.key, sData.recommendations);
+		}
 		await importRecommendations();
 		logger.info(
 			logger.NAMES.recImp,
@@ -37,7 +48,7 @@ async function importRecommendations() {
 	let recsToCheck = await getListOfRecommendationsToImport();
 	logger.info(
 		logger.NAMES.recImp,
-		recsToCheck.length + " Recommendations need to be checked"
+		recsToCheck.length + " Recommendations need to be checked and imported"
 	);
 	// Get a list of all the songs to reduce duplicates
 	let songsToImportSet = new Set();
