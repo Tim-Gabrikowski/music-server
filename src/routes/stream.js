@@ -3,7 +3,9 @@ import ytdl from "ytdl-core";
 import * as logger from "../logger.js";
 import { Writable } from "stream";
 import ffmpeg from "fluent-ffmpeg";
-import { Song, Location } from "../db.js";
+import { Song, Location, Artist } from "../db.js";
+import { UPDATE_QUEUE } from "../services/recLoader.js";
+import { createSongData } from "../tools/input_converter.js";
 
 let router;
 export default router = express.Router();
@@ -14,8 +16,16 @@ router.get("/:key", async (req, res) => {
 
 	let song = await Song.findOne({
 		where: { key: req.params.key },
-		include: [Location],
+		include: [
+			Location,
+			{ model: Song, as: "recommendedSongs", include: [Artist] },
+		],
 	});
+
+	if (song.recommendedSongs.length == 0) {
+		let sData = await createSongData(song.key);
+		UPDATE_QUEUE.add(sData);
+	}
 
 	if (song) {
 		let loc = song.Locations.find((obj) => obj.type === "fileserver");

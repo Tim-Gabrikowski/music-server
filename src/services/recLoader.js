@@ -8,20 +8,27 @@ dotenv.config();
 
 export const UPDATE_QUEUE = new Queue();
 
+UPDATE_QUEUE.on("item", (item) => {
+	logger.debug(logger.NAMES.recImp, "New Item in import Queue: " + item.key);
+});
+
 const IMPORT_CRON = process.env.DYNAMIC_IMPORT_CRON || "*/5 * * * *";
 
 export async function startRecommedationImporting() {
 	logger.info(logger.NAMES.recImp, "Starting Recommendation Importer");
+
 	await importRecommendations();
+
 	logger.info(
 		logger.NAMES.recImp,
 		"All left over Recommendations are now imported properly"
 	);
-	// TODO: add sceduler that imports new Recommendations in a certain period of time
+	// sceduler that imports new Recommendations in a certain period of time (CRON Entry)
 	logger.info(
 		logger.NAMES.recImp,
 		"Scedule new Recommendation imports. CRON: " + IMPORT_CRON
 	);
+
 	cron.schedule(IMPORT_CRON, async () => {
 		logger.info(
 			logger.NAMES.recImp,
@@ -29,13 +36,20 @@ export async function startRecommedationImporting() {
 		);
 		logger.info(
 			logger.NAMES.recImp,
-			UPDATE_QUEUE.size + " new Songs in queue that want recommendations"
+			UPDATE_QUEUE.size() +
+				" new Songs in queue that want recommendations"
 		);
+
+		// load new recommendations for songs in queue
 		while (!UPDATE_QUEUE.isEmpty()) {
 			let sData = UPDATE_QUEUE.next();
-			await updateRecommendations(sData.key, sData.recommendations);
+			console.log(sData);
+			await updateRecommendations(sData.key, sData.recommendedSongs);
 		}
+
+		// inport the recommended songs of not in system
 		await importRecommendations();
+
 		logger.info(
 			logger.NAMES.recImp,
 			"All left over Recommendations are now imported properly"

@@ -1,10 +1,14 @@
-export class Queue {
+import { EventEmitter } from "events";
+
+export class Queue extends EventEmitter {
 	constructor() {
+		super();
 		this.items = [];
 	}
 
 	add(item) {
 		this.items.push(item);
+		this.emit("item", item);
 	}
 
 	next() {
