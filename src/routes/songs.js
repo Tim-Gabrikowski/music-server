@@ -17,6 +17,7 @@ import {
 	getInputData,
 	createSongData,
 } from "../tools/input_converter.js";
+import { updateRecommendations } from "../services/recLoader.js";
 
 import { authMiddleware } from "../middlewares/auth.js";
 
@@ -47,7 +48,11 @@ router.get("/share/:key", async (req, res) => {
 	let songKey = req.params.key;
 	let song = await Song.findOne({
 		where: { key: songKey },
-		include: [Artist, Location],
+		include: [
+			Artist,
+			Location,
+			{ model: Song, as: "recommendedSongs", include: [Artist] },
+		],
 	});
 
 	if (song == undefined || song == null)
@@ -77,7 +82,9 @@ router.get("/share/:key", async (req, res) => {
 });
 
 router.get("/list", authMiddleware, async (req, res) => {
-	let songs = await Song.findAll({ include: [Artist, Location] });
+	let songs = await Song.findAll({
+		include: [Artist, Location],
+	});
 	res.send(songs);
 });
 
@@ -296,37 +303,4 @@ async function addSong(key, cb) {
 			cb(song);
 			console.log(err);
 		});
-}
-
-async function updateRecommendations(songKey, recommendations) {
-	let song = await Song.findOne({ where: { key: songKey } });
-
-	for (let i = 0; i < recommendations.length; i++) {
-		const element = recommendations[i];
-		//  check if already related
-		let rec = await Recommendation.findOne({
-			where: {
-				songId: song.id,
-				recommendsKey: element.id,
-			},
-		});
-		if (!rec) {
-			let s = await Song.findOne({ where: { key: element.id } });
-			let id = undefined;
-			if (s != undefined) id = s.id;
-			let n_rec = await Recommendation.build({
-				songId: song.id,
-				recommendsKey: element.id,
-				recommendedSongId: id,
-				count: 1,
-			}).save();
-		}
-	}
-	return await song.reload({
-		include: [
-			Artist,
-			Location,
-			{ model: Song, as: "recommendedSongs", include: [Artist] },
-		],
-	});
 }

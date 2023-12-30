@@ -1,6 +1,6 @@
 import { Recommendation, Song, Artist } from "../db.js";
 import * as logger from "../logger.js";
-import { createSongData } from "./input_converter.js";
+import { createSongData } from "../tools/input_converter.js";
 const cron = await import("node-cron");
 import dotenv from "dotenv";
 dotenv.config();
@@ -92,5 +92,38 @@ async function importRecommendations() {
 async function getListOfRecommendationsToImport() {
 	return Recommendation.findAll({
 		where: { recommendedSongId: null },
+	});
+}
+
+export async function updateRecommendations(songKey, recommendations) {
+	let song = await Song.findOne({ where: { key: songKey } });
+
+	for (let i = 0; i < recommendations.length; i++) {
+		const element = recommendations[i];
+		//  check if already related
+		let rec = await Recommendation.findOne({
+			where: {
+				songId: song.id,
+				recommendsKey: element.id,
+			},
+		});
+		if (!rec) {
+			let s = await Song.findOne({ where: { key: element.id } });
+			let id = undefined;
+			if (s != undefined) id = s.id;
+			let n_rec = await Recommendation.build({
+				songId: song.id,
+				recommendsKey: element.id,
+				recommendedSongId: id,
+				count: 1,
+			}).save();
+		}
+	}
+	return await song.reload({
+		include: [
+			Artist,
+			Location,
+			{ model: Song, as: "recommendedSongs", include: [Artist] },
+		],
 	});
 }

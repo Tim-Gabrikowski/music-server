@@ -6,7 +6,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import { initDB } from "./db.js";
-import { startRecommedationImporting } from "./tools/recLoader.js";
+import { startRecommedationImporting } from "./services/recLoader.js";
 
 process.on("uncaughtException", (error) => {
 	logger.critical(logger.NAMES.main, error);
