@@ -29,6 +29,11 @@ body {
 	justify-content: center;
 }
 
+a {
+	color: white;
+	font-weight: 400;
+}
+
 h1,
 h2,
 h3 {
